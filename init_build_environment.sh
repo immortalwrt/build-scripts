@@ -140,7 +140,7 @@ function install_compilation_dependencies(){
 	echo -e "Installing compilation dependencies..."
 
 	apt full-upgrade -y
-	apt install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python python3 python-pip python3-pip python-ply python3-ply haveged lrzsz device-tree-compiler scons squashfs-tools antlr3 gperf ecj fastjar re2c
+	apt install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python python3 python-pip python3-pip python-ply python3-ply haveged lrzsz device-tree-compiler scons squashfs-tools antlr3 gperf ecj fastjar re2c xxd help2man pkgconf libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev python-docutils cpio bison
 
 	apt install -y gcc-8 g++-8 gcc-8-multilib g++-8-multilib
 	ln -sf "/usr/bin/gcc-8" "/usr/bin/gcc"
