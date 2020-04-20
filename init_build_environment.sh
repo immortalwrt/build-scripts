@@ -156,13 +156,6 @@ function install_compilation_dependencies(){
 	apt install -y golang-1.14-go
 	ln -sf "/usr/lib/go-1.14/bin/go" "/usr/bin/go"
 	ln -sf "/usr/lib/go-1.14/bin/gofmt" "/usr/bin/gofmt"
-	go env -w "GOPROXY=https://goproxy.cn,direct"
-	mkdir -p "/etc/profile.d/"
-	cat <<-EOF > "/etc/profile.d/099-Set-Golang-Mirror.sh"
-#!/bin/bash
-export GOPROXY="https://goproxy.cn"
-	EOF
-	chmod 0755 "/etc/profile.d/099-Set-Golang-Mirror.sh"
 
 	apt clean -y
 
