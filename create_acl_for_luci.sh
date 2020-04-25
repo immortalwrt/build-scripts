@@ -92,7 +92,7 @@ do
 		exit
 		;;
 	h|?|*)
-		echo -e "${info_font}Usage: $0 [-a|-m -p <path-to-acl> -l <luci-name> -n <conf-name>|-c]"
+		echo -e "${info_font}Usage: $0 [-a|-m (-p <path-to-acl>) -l <luci-name> -n <conf-name>|-c]"
 		exit 2
 		;;
 	esac
@@ -101,6 +101,7 @@ done
 [ "$?" -ne "0" ] && exit
 
 if [ "*${manual_mode}*" == "*1*" ]; then
+	acl_path="${acl_path:-root/usr/share/rpcd/acl.d}"
 	if create_acl_file "${acl_path}" "${luci_name}" "${conf_name}"; then
 		echo -e "${success_font}Output file: $(ls "${acl_path}/${luci_name}.json")"
 		echo_green_bg "$(cat "${acl_path}/${luci_name}.json")"
