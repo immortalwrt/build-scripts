@@ -153,9 +153,9 @@ function install_compilation_dependencies(){
 	npm config set registry "https://registry.npm.taobao.org/" --global
 	yarn config set registry "https://registry.npm.taobao.org/" --global
 
-	apt install -y golang-1.14-go
-	ln -sf "/usr/lib/go-1.14/bin/go" "/usr/bin/go"
-	ln -sf "/usr/lib/go-1.14/bin/gofmt" "/usr/bin/gofmt"
+	apt install -y golang-1.15-go
+	ln -sf "/usr/lib/go-1.15/bin/go" "/usr/bin/go"
+	ln -sf "/usr/lib/go-1.15/bin/gofmt" "/usr/bin/gofmt"
 
 	apt clean -y
 
