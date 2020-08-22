@@ -71,9 +71,7 @@ while getopts "achml:n:p:" input_arg
 do
 	case $input_arg in
 	a)
-		clean_outdated_files
 		auto_create_acl
-		exit
 		;;
 	m)
 		manual_mode=1
@@ -89,7 +87,6 @@ do
 		;;
 	c)
 		clean_outdated_files
-		exit
 		;;
 	h|?|*)
 		echo -e "${info_font}Usage: $0 [-a|-m (-p <path-to-acl>) -l <luci-name> -n <conf-name>|-c]"
@@ -98,9 +95,7 @@ do
 	esac
 done
 
-[ "$?" -ne "0" ] && exit
-
-if [ "*${manual_mode}*" == "*1*" ]; then
+if [ "*${manual_mode}*" == "*1*" ] && [ -n "${luci_name}" ] && [ -n "${conf_name}" ]; then
 	acl_path="${acl_path:-root/usr/share/rpcd/acl.d}"
 	if create_acl_file "${acl_path}" "${luci_name}" "${conf_name}"; then
 		echo -e "${success_font}Output file: $(ls "${acl_path}/${luci_name}.json")"
