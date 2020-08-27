@@ -1,0 +1,3 @@
+[submodule "maintainer-tools"]
+	path = maintainer-tools
+	url = https://git.openwrt.org/maintainer-tools.git
