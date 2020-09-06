@@ -72,6 +72,7 @@ do
 	case $input_arg in
 	a)
 		auto_create_acl
+		exit
 		;;
 	m)
 		manual_mode=1
@@ -87,6 +88,7 @@ do
 		;;
 	c)
 		clean_outdated_files
+		exit
 		;;
 	h|?|*)
 		echo -e "${info_font}Usage: $0 [-a|-m (-p <path-to-acl>) -l <luci-name> -n <conf-name>|-c]"
