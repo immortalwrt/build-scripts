@@ -27,10 +27,10 @@ function check_system(){
 		ubuntu_release="disco"
 	elif grep -qo "Ubuntu 19.10" "/etc/issue"; then
 		ubuntu_release="eoan"
-	#elif grep -qo "Ubuntu 20.04" "/etc/issue"; then
-	#	ubuntu_release="focal"
+	elif grep -qo "Ubuntu 20.04" "/etc/issue"; then
+		ubuntu_release="focal"
 	else
-		echo -e "${error_font}Only Ubuntu 16.04,18.04,19.04,19.10 is supported."
+		echo -e "${error_font}Only Ubuntu 16.04,18.04,19.04,19.10,20.04 is supported."
 		exit 1
 	fi
 	[ "$(uname -m)" != "x86_64" ] && { echo -e "${error_font}Only x86_64 is supported." && exit 1; }
@@ -62,56 +62,23 @@ function update_apt_source(){
 	mkdir -p "/etc/apt/sources.list.d"
 	mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 	cat <<-EOF >"/etc/apt/sources.list"
-# See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
-# newer versions of the distribution.
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release} main restricted
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release} main restricted
-## Major bug fix updates produced after the final release of the
-## distribution.
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-updates main restricted
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-updates main restricted
-## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu
-## team. Also, please note that software in universe WILL NOT receive any
-## review or updates from the Ubuntu security team.
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release} universe
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release} universe
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-updates universe
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-updates universe
-## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu
-## team, and may not be under a free licence. Please satisfy yourself as to
-## your rights to use the software. Also, please note that software in
-## multiverse WILL NOT receive any review or updates from the Ubuntu
-## security team.
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release} multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release} multiverse
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-updates multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-updates multiverse
-## N.B. software from this repository may not have been tested as
-## extensively as that contained in the main release, although it includes
-## newer versions of some applications which may provide useful features.
-## Also, please note that software in backports WILL NOT receive any review
-## or updates from the Ubuntu security team.
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-backports main restricted universe multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-backports main restricted universe multiverse
-## Uncomment the following two lines to add software from Canonical's
-## 'partner' repository.
-## This software is not part of Ubuntu, but is offered by Canonical and the
-## respective vendors as a service to Ubuntu users.
-# deb http://archive.canonical.com/ubuntu ${ubuntu_release} partner
-# deb-src http://archive.canonical.com/ubuntu ${ubuntu_release} partner
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-security main restricted
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-security main restricted
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-security universe
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-security universe
-deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-security multiverse
-# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu ${ubuntu_release}-security multiverse
+deb http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release} main restricted universe multiverse
+deb http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-security main restricted universe multiverse
+deb http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-updates main restricted universe multiverse
+deb http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-backports main restricted universe multiverse
+# deb http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-proposed main restricted universe multiverse
+deb-src http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release} main restricted universe multiverse
+deb-src http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-security main restricted universe multiverse
+deb-src http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-updates main restricted universe multiverse
+deb-src http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-backports main restricted universe multiverse
+# deb-src http://mirrors.cloud.tencent.com/ubuntu/ ${ubuntu_release}-proposed main restricted universe multiverse
 	EOF
 
 	sed -i "s#ppa.launchpad.net#launchpad.proxy.ustclug.org#g" /etc/apt/sources.list.d/*
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-deb https://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_12.x ${ubuntu_release} main
-deb-src https://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_12.x ${ubuntu_release} main
+deb https://mirrors.cloud.tencent.com/nodesource/deb_12.x ${ubuntu_release} main
+deb-src https://mirrors.cloud.tencent.com/nodesource/deb_12.x ${ubuntu_release} main
 	EOF
 	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add -
 
@@ -140,7 +107,8 @@ function install_compilation_dependencies(){
 	echo -e "Installing compilation dependencies..."
 
 	apt full-upgrade -y
-	apt install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python python3 python-pip python3-pip python-ply python3-ply haveged lrzsz device-tree-compiler scons squashfs-tools antlr3 gperf ecj fastjar re2c intltool xxd help2man pkgconf libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev python-docutils cpio bison rsync mkisofs
+	[ "${ubuntu_release}" = "focal" ] && extra_packages="python-is-python3" || extra_packages="python python-pip python-ply"
+	apt install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano ${extra_packages} python3 python3-pip python3-ply haveged lrzsz device-tree-compiler scons squashfs-tools antlr3 gperf ecj fastjar re2c intltool xxd help2man pkgconf libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev python-docutils cpio bison rsync mkisofs
 
 	apt install -y gcc-8 g++-8 gcc-8-multilib g++-8-multilib
 	ln -sf "/usr/bin/gcc-8" "/usr/bin/gcc"
