@@ -121,13 +121,13 @@ function install_compilation_dependencies(){
 	npm config set registry "https://registry.npm.taobao.org/" --global
 	yarn config set registry "https://registry.npm.taobao.org/" --global
 
-	apt install -y golang-1.15-go
-	ln -sf "/usr/lib/go-1.15/bin/go" "/usr/bin/go"
-	ln -sf "/usr/lib/go-1.15/bin/gofmt" "/usr/bin/gofmt"
+	apt install -y golang-1.16-go
+	ln -sf "/usr/lib/go-1.16/bin/go" "/usr/bin/go"
+	ln -sf "/usr/lib/go-1.16/bin/gofmt" "/usr/bin/gofmt"
 
 	apt clean -y
 
-	upx_version="$(curl -s https://github.com/upx/upx/releases/latest/download | grep -Eo "[0-9]+.[0-9]+")"
+	upx_version="3.95"
 	curl -sL "https://github.com/upx/upx/releases/download/v${upx_version}/upx-${upx_version}-amd64_linux.tar.xz" -o "/root/upx-${upx_version}-amd64_linux.tar.xz"
 	tar -xf "/root/upx-${upx_version}-amd64_linux.tar.xz" -C "/root/"
 	rm -f "/usr/bin/upx" "/usr/bin/upx-ucl"
