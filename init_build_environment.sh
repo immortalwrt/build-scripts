@@ -27,8 +27,8 @@ function check_system(){
 		ubuntu_release="disco"
 	elif grep -qo "Ubuntu 19.10" "/etc/issue"; then
 		ubuntu_release="eoan"
-	elif grep -qo "Ubuntu 20.04" "/etc/issue"; then
-		ubuntu_release="focal"
+	#elif grep -qo "Ubuntu 20.04" "/etc/issue"; then
+	#	ubuntu_release="focal"
 	else
 		echo -e "${error_font}Only Ubuntu 16.04,18.04,19.04,19.10,20.04 is supported."
 		exit 1
