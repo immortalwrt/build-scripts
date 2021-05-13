@@ -19,18 +19,12 @@ function set_fonts_colors(){
 function check_system(){
 	echo -e "${info_font}Checking system info..."
 
-	if grep -qo "Ubuntu 16.04" "/etc/issue"; then
-		ubuntu_release="xenial"
-	elif grep -qo "Ubuntu 18.04" "/etc/issue"; then
+	if grep -qo "Ubuntu 18.04" "/etc/issue"; then
 		ubuntu_release="bionic"
-	elif grep -qo "Ubuntu 19.04" "/etc/issue"; then
-		ubuntu_release="disco"
-	elif grep -qo "Ubuntu 19.10" "/etc/issue"; then
-		ubuntu_release="eoan"
 	#elif grep -qo "Ubuntu 20.04" "/etc/issue"; then
 	#	ubuntu_release="focal"
 	else
-		echo -e "${error_font}Only Ubuntu 16.04,18.04,19.04,19.10,20.04 is supported."
+		echo -e "${error_font}Only Ubuntu 18.04 is supported."
 		exit 1
 	fi
 	[ "$(uname -m)" != "x86_64" ] && { echo -e "${error_font}Only x86_64 is supported." && exit 1; }
