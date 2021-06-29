@@ -43,9 +43,9 @@ function check_user(){
 function check_network(){
 	echo -e "${info_font}Checking network..."
 
-	( curl -s "myip.ipip.net" | grep -qo "中国"; ) || { echo -e "${error_font}The script is for Chinese only." && exit 1; }
-	( curl --connect-timeout 10 "baidu.com" > "/dev/null" 2>&1; ) || { echo -e "${warning_font}Your network is not suitable for compiling OpenWrt!"; }
-	( curl --connect-timeout 10 "google.com" > "/dev/null" 2>&1; ) || { echo -e "${warning_font}Your network is not suitable for compiling OpenWrt!"; }
+	curl -s "myip.ipip.net" | grep -qo "中国" && country_cn="Y"
+	curl --connect-timeout 10 "baidu.com" > "/dev/null" 2>&1 || { echo -e "${warning_font}Your network is not suitable for compiling OpenWrt!"; }
+	curl --connect-timeout 10 "google.com" > "/dev/null" 2>&1 || { echo -e "${warning_font}Your network is not suitable for compiling OpenWrt!"; }
 
 	echo -e "${ok_font}Done."
 }
@@ -54,44 +54,46 @@ function update_apt_source(){
 	echo -e "${info_font}Updating apt source lists..."
 
 	mkdir -p "/etc/apt/sources.list.d"
-	mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
-	cat <<-EOF >"/etc/apt/sources.list"
-deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release} main restricted universe multiverse
-deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-security main restricted universe multiverse
-deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-updates main restricted universe multiverse
-deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-backports main restricted universe multiverse
-# deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-proposed main restricted universe multiverse
-deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release} main restricted universe multiverse
-deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-security main restricted universe multiverse
-deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-updates main restricted universe multiverse
-deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-backports main restricted universe multiverse
-# deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-proposed main restricted universe multiverse
-	EOF
-
-	sed -i "s#ppa.launchpad.net#launchpad.proxy.ustclug.org#g" /etc/apt/sources.list.d/*
+	[ -n "${country_cn}" ] && {
+		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
+		cat <<-EOF >"/etc/apt/sources.list"
+			deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release} main restricted universe multiverse
+			deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-security main restricted universe multiverse
+			deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-updates main restricted universe multiverse
+			deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-backports main restricted universe multiverse
+			# deb http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-proposed main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release} main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-security main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-updates main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-backports main restricted universe multiverse
+			# deb-src http://mirrors.tencent.com/ubuntu/ ${ubuntu_release}-proposed main restricted universe multiverse
+		EOF
+	}
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-deb https://deb.nodesource.com/node_14.x ${ubuntu_release} main
-deb-src https://deb.nodesource.com/node_14.x ${ubuntu_release} main
+		deb https://deb.nodesource.com/node_14.x ${ubuntu_release} main
+		deb-src https://deb.nodesource.com/node_14.x ${ubuntu_release} main
 	EOF
 	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add -
 
 	cat <<-EOF >"/etc/apt/sources.list.d/yarn.list"
-deb https://dl.yarnpkg.com/debian/ stable main
+		deb https://dl.yarnpkg.com/debian/ stable main
 	EOF
 	curl -sL "https://dl.yarnpkg.com/debian/pubkey.gpg" | apt-key add -
 
 	cat <<-EOF >"/etc/apt/sources.list.d/gcc-toolchain.list"
-deb https://launchpad.proxy.ustclug.org/ubuntu-toolchain-r/test/ubuntu ${ubuntu_release} main
-deb-src https://launchpad.proxy.ustclug.org/ubuntu-toolchain-r/test/ubuntu ${ubuntu_release} main
+		deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${ubuntu_release} main
+		deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu ${ubuntu_release} main
 	EOF
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" | apt-key add -
 
 	cat <<-EOF >"/etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-${ubuntu_release}.list"
-deb https://launchpad.proxy.ustclug.org/longsleep/golang-backports/ubuntu ${ubuntu_release} main
-deb-src https://launchpad.proxy.ustclug.org/longsleep/golang-backports/ubuntu ${ubuntu_release} main
+		deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu ${ubuntu_release} main
+		deb-src http://ppa.launchpad.net/longsleep/golang-backports/ubuntu ${ubuntu_release} main
 	EOF
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x52b59b1571a79dbc054901c0f6bc817356a3d45e" | apt-key add -
+
+	[ -n "${country_cn}" ] && sed -i "s#http://ppa.launchpad.net#https://launchpad.proxy.ustclug.org#g" "/etc/apt/sources.list.d"/*
 
 	apt update -y
 
@@ -112,8 +114,10 @@ function install_compilation_dependencies(){
 	ln -sf "/usr/bin/gcc-ranlib-8" "/usr/bin/gcc-ranlib"
 
 	apt install -y nodejs yarn
-	npm config set registry "https://registry.npm.taobao.org/" --global
-	yarn config set registry "https://registry.npm.taobao.org/" --global
+	[ -n "${country_cn}" ] && {
+		npm config set registry "https://registry.npm.taobao.org/" --global
+		yarn config set registry "https://registry.npm.taobao.org/" --global
+	}
 
 	apt install -y golang-1.16-go
 	ln -sf "/usr/lib/go-1.16/bin/go" "/usr/bin/go"
