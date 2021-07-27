@@ -104,7 +104,7 @@ function install_compilation_dependencies(){
 
 	apt full-upgrade -y
 	[ "${ubuntu_release}" = "focal" ] && extra_packages="python2.7" || extra_packages="python python-pip python-ply"
-	apt install -y ack build-essential asciidoc binutils bzip2 cmake gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano ${extra_packages} python3 python3-pip python3-ply haveged lrzsz device-tree-compiler scons squashfs-tools antlr3 gperf ecj fastjar re2c intltool xxd help2man pkgconf libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev python-docutils cpio bison rsync mkisofs
+	apt install -y ack build-essential asciidoc binutils bzip2 cmake gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano ${extra_packages} python3 python3-pip python3-ply haveged lrzsz device-tree-compiler scons squashfs-tools antlr3 gperf ecj fastjar re2c intltool xxd help2man pkgconf libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev python-docutils cpio bison rsync mkisofs ninja-build
 
 	apt install -y gcc-8 g++-8 gcc-8-multilib g++-8-multilib
 	ln -sf "/usr/bin/gcc-8" "/usr/bin/gcc"
