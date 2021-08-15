@@ -112,6 +112,7 @@ function install_compilation_dependencies(){
 	ln -sf "/usr/bin/gcc-ar-8" "/usr/bin/gcc-ar"
 	ln -sf "/usr/bin/gcc-nm-8" "/usr/bin/gcc-nm"
 	ln -sf "/usr/bin/gcc-ranlib-8" "/usr/bin/gcc-ranlib"
+	ln -sf "/usr/include/asm-generic" "/usr/include/asm"
 
 	apt install -y nodejs yarn
 	[ -n "${country_cn}" ] && {
