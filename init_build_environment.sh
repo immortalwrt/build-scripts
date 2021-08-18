@@ -104,7 +104,12 @@ function install_compilation_dependencies(){
 
 	apt full-upgrade -y
 	[ "${ubuntu_release}" = "focal" ] && extra_packages="python2.7" || extra_packages="python python-pip python-ply"
-	apt install -y ack build-essential asciidoc binutils bzip2 cmake gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano ${extra_packages} python3 python3-pip python3-ply haveged lrzsz device-tree-compiler scons squashfs-tools antlr3 gperf ecj fastjar re2c intltool xxd help2man pkgconf libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev python-docutils cpio bison rsync mkisofs ninja-build
+	apt install -y ${extra_packages} ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+		bzip2 ccache cmake cpio curl device-tree-compiler ecj fastjar flex gawk gettext git git-core gperf haveged \
+		help2man intltool lib32gcc1 libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev \
+		libmpfr-dev libncurses5-dev libncurses5-dev libreadline-dev libssl-dev libtool libz-dev lrzsz mkisofs msmtp \
+		nano ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip python3-ply python-docutils qemu-utils \
+		re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto xxd zlib1g-dev
 
 	apt install -y gcc-8 g++-8 gcc-8-multilib g++-8-multilib
 	ln -sf "/usr/bin/gcc-8" "/usr/bin/gcc"
