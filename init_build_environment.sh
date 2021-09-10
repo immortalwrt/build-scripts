@@ -140,13 +140,13 @@ function install_compilation_dependencies(){
 	ln -sf "/usr/bin/upx-ucl" "/usr/bin/upx"
 	rm -rf "/tmp/upx-${upx_version}-amd64_linux.tar.xz" "/tmp/upx-${upx_version}-amd64_linux"
 
-	curl -sL "https://build-scripts.project-openwrt.eu.org/init_build_environment/modify-firmware" -o "/usr/bin/modify-firmware"
+	curl -sL "https://build-scripts.immortalwrt.eu.org/init_build_environment/modify-firmware" -o "/usr/bin/modify-firmware"
 	chmod 0755 "/usr/bin/modify-firmware"
-	curl -sL "https://build-scripts.project-openwrt.eu.org/init_build_environment/po2lmo" -o "/usr/bin/po2lmo"
+	curl -sL "https://build-scripts.immortalwrt.eu.org/init_build_environment/po2lmo" -o "/usr/bin/po2lmo"
 	chmod 0755 "/usr/bin/po2lmo"
-	curl -sL "https://build-scripts.project-openwrt.eu.org/init_build_environment/padjffs2" -o "/usr/bin/padjffs2"
+	curl -sL "https://build-scripts.immortalwrt.eu.org/init_build_environment/padjffs2" -o "/usr/bin/padjffs2"
 	chmod 0755 "/usr/bin/padjffs2"
-	curl -sL "https://build-scripts.project-openwrt.eu.org/init_build_environment/fip_create" -o "/usr/bin/fip_create"
+	curl -sL "https://build-scripts.immortalwrt.eu.org/init_build_environment/fip_create" -o "/usr/bin/fip_create"
 	chmod 0755 "/usr/bin/fip_create"
 
 	echo -e "Done."
