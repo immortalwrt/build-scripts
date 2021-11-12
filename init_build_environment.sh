@@ -24,7 +24,7 @@ function check_system(){
 	elif grep -qo "Ubuntu 20.04" "/etc/issue"; then
 		ubuntu_release="focal"
 	else
-		echo -e "${error_font}Only Ubuntu 18.04 and 20.24 are supported."
+		echo -e "${error_font}Only Ubuntu 18.04 and 20.04 are supported."
 		exit 1
 	fi
 	[ "$(uname -m)" != "x86_64" ] && { echo -e "${error_font}Only x86_64 is supported." && exit 1; }
@@ -118,6 +118,11 @@ function install_compilation_dependencies(){
 	ln -sf "/usr/bin/gcc-nm-8" "/usr/bin/gcc-nm"
 	ln -sf "/usr/bin/gcc-ranlib-8" "/usr/bin/gcc-ranlib"
 	ln -sf "/usr/include/asm-generic" "/usr/include/asm"
+
+	apt install clang-12
+	ln -sf "/usr/bin/clang-12" "/usr/bin/clang"
+	ln -sf "/usr/bin/clang++-12" "/usr/bin/clang++"
+	ln -sf "/usr/bin/clang-cpp-12" "/usr/bin/clang-cpp"
 
 	apt install -y nodejs yarn
 	[ -n "${country_cn}" ] && {
