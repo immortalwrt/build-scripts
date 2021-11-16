@@ -91,6 +91,12 @@ function update_apt_source(){
 	EOF
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" | apt-key add -
 
+	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
+		deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-13 main
+		deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-13 main
+	EOF
+	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" | apt-key add -
+
 	cat <<-EOF >"/etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-$UBUNTU_RELEASE.list"
 		deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_RELEASE main
 		deb-src http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_RELEASE main
@@ -124,10 +130,11 @@ function install_dependencies(){
 	ln -svf "/usr/bin/gcc-ranlib-8" "/usr/bin/gcc-ranlib"
 	ln -svf "/usr/include/asm-generic" "/usr/include/asm"
 
-	apt install -y clang-12
-	ln -svf "/usr/bin/clang-12" "/usr/bin/clang"
-	ln -svf "/usr/bin/clang++-12" "/usr/bin/clang++"
-	ln -svf "/usr/bin/clang-cpp-12" "/usr/bin/clang-cpp"
+	apt install -y clang-13 lldb-13 lld-13 clangd-13
+	ln -svf "/usr/bin/clang-13" "/usr/bin/clang"
+	ln -svf "/usr/bin/clangd-13" "/usr/bin/clangd"
+	ln -svf "/usr/bin/clang++-13" "/usr/bin/clang++"
+	ln -svf "/usr/bin/clang-cpp-13" "/usr/bin/clang-cpp"
 
 	apt install -y nodejs yarn
 	[ -n "$CHN_NET" ] && {
