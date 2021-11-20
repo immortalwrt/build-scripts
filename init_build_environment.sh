@@ -92,8 +92,8 @@ function update_apt_source(){
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" | apt-key add -
 
 	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-		deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-13 main
-		deb-src http://apt.llvm.org/bionic/ llvm-toolchain-bionic-13 main
+		deb http://apt.llvm.org/$UBUNTU_RELEASE/ llvm-toolchain-$UBUNTU_RELEASE-13 main
+		deb-src http://apt.llvm.org/$UBUNTU_RELEASE/ llvm-toolchain-$UBUNTU_RELEASE-13 main
 	EOF
 	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" | apt-key add -
 
