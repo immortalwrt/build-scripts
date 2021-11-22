@@ -1,5 +1,4 @@
 #!/bin/sh
-sudo echo > "/dev/null"
 
 MKSQSHFS4='mksquashfs'
 PADJFFS2='padjffs2'
@@ -13,13 +12,13 @@ case "$1" in
 	#echo $offset1 " " $offset2 " " $size2
 	dd if="$2" of="kernel.bin" bs=1 ibs=1 count="$offset1"
 	dd if="$2" of="secondchunk.bin" bs=1 ibs=1 count="$size2" skip="$offset1"
-	sudo rm -rf "squashfs-root" 2>&1
-	sudo $UNSQSHFS -d "squashfs-root" "secondchunk.bin"
+	fakeroot rm -rf "squashfs-root" 2>&1
+	fakeroot $UNSQSHFS -d "squashfs-root" "secondchunk.bin"
 	rm "secondchunk.bin"
 	;;
 'create'|'c')
-	sudo $MKSQSHFS4 "./squashfs-root" "./newsecondchunk.bin"
-	sudo chown "$USER" "./newsecondchunk.bin"
+	fakeroot $MKSQSHFS4 "./squashfs-root" "./newsecondchunk.bin"
+	fakeroot chown "$USER" "./newsecondchunk.bin"
 	cat "kernel.bin" "newsecondchunk.bin" > "$2"
 	$PADJFFS2 "$2"
 	rm "newsecondchunk.bin"
