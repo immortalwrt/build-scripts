@@ -139,8 +139,8 @@ function install_dependencies(){
 
 	apt install -y nodejs yarn
 	[ -n "$CHN_NET" ] && {
-		npm config set registry "https://registry.npm.taobao.org/" --global
-		yarn config set registry "https://registry.npm.taobao.org/" --global
+		npm config set registry "https://registry.npmmirror.com/" --global
+		yarn config set registry "https://registry.npmmirror.com/" --global
 	}
 
 	apt install -y golang-1.17-go
