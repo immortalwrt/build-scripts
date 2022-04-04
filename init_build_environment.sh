@@ -143,10 +143,10 @@ function install_dependencies(){
 		yarn config set registry "https://registry.npmmirror.com/" --global
 	}
 
-	apt install -y golang-1.17-go
+	apt install -y golang-1.18-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
-	ln -svf "/usr/lib/go-1.17/bin/go" "/usr/bin/go"
-	ln -svf "/usr/lib/go-1.17/bin/gofmt" "/usr/bin/gofmt"
+	ln -svf "/usr/lib/go-1.18/bin/go" "/usr/bin/go"
+	ln -svf "/usr/lib/go-1.18/bin/gofmt" "/usr/bin/gofmt"
 
 	apt clean -y
 
