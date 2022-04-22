@@ -55,7 +55,7 @@ function update_apt_source(){
 	set -x
 
 	apt update -y
-	apt install -y apt-transport-https
+	apt install -y apt-transport-https gnupg2
 	[ -n "$CHN_NET" ] && {
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 		cat <<-EOF >"/etc/apt/sources.list"
