@@ -8,7 +8,7 @@ case "$1" in
 'extract'|'e')
 	offset1="$(grep -oba hsqs "$2" | grep -oP '[0-9]*(?=:hsqs)')"
 	offset2="$(wc -c "$2" | grep -oP '[0-9]*(?= )')"
-	size2="$(("$offset2" - "$offset1"))"
+	size2="$((offset2 - offset1))"
 	#echo $offset1 " " $offset2 " " $size2
 	dd if="$2" of="kernel.bin" bs=1 ibs=1 count="$offset1"
 	dd if="$2" of="secondchunk.bin" bs=1 ibs=1 count="$size2" skip="$offset1"
