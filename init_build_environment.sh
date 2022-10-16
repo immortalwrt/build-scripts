@@ -80,30 +80,30 @@ function update_apt_source(){
 		deb https://deb.nodesource.com/node_16.x $UBUNTU_CODENAME main
 		deb-src https://deb.nodesource.com/node_16.x $UBUNTU_CODENAME main
 	EOF
-	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add -
+	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" -o "/etc/apt/trusted.gpg.d/nodesource.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/yarn.list"
 		deb https://dl.yarnpkg.com/debian/ stable main
 	EOF
-	curl -sL "https://dl.yarnpkg.com/debian/pubkey.gpg" | apt-key add -
+	curl -sL "https://dl.yarnpkg.com/debian/pubkey.gpg" -o "/etc/apt/trusted.gpg.d/yarn.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/gcc-toolchain.list"
 		deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
 		deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
 	EOF
-	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" | apt-key add -
+	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" -o "/etc/apt/trusted.gpg.d/gcc-toolchain.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
 		deb http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-13 main
 		deb-src http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-13 main
 	EOF
-	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" | apt-key add -
+	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-$UBUNTU_CODENAME.list"
 		deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_CODENAME main
 		deb-src http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_CODENAME main
 	EOF
-	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x52b59b1571a79dbc054901c0f6bc817356a3d45e" | apt-key add -
+	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x52b59b1571a79dbc054901c0f6bc817356a3d45e" -o "/etc/apt/trusted.gpg.d/longsleep-ubuntu-golang-backports-$UBUNTU_CODENAME.asc"
 
 	[ -n "$CHN_NET" ] && sed -i "s,http://ppa.launchpad.net,https://launchpad.proxy.ustclug.org,g" "/etc/apt/sources.list.d"/*
 
@@ -123,7 +123,7 @@ function install_dependencies(){
 	esac
 	apt install -y $EXTRA_PKG ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
 		bzip2 ccache cmake cpio curl device-tree-compiler ecj fakeroot fastjar flex gawk gettext git gperf \
-		haveged help2man intltool jq lib32gcc1 libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
+		haveged help2man intltool jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
 		libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev libreadline-dev libssl-dev libtool \
 		libyaml-dev libz-dev lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf libpython3-dev \
 		python3 python3-pip python3-ply python3-docutils qemu-utils quilt re2c rsync scons squashfs-tools \
