@@ -129,12 +129,12 @@ function install_dependencies(){
 		python3 python3-pip python3-ply python3-docutils qemu-utils quilt re2c rsync scons squashfs-tools \
 		subversion swig texinfo uglifyjs unzip vim wget xmlto xxd zlib1g-dev
 
-	apt install -y gcc-8 g++-8 gcc-8-multilib g++-8-multilib
-	ln -svf "/usr/bin/gcc-8" "/usr/bin/gcc"
-	ln -svf "/usr/bin/g++-8" "/usr/bin/g++"
-	ln -svf "/usr/bin/gcc-ar-8" "/usr/bin/gcc-ar"
-	ln -svf "/usr/bin/gcc-nm-8" "/usr/bin/gcc-nm"
-	ln -svf "/usr/bin/gcc-ranlib-8" "/usr/bin/gcc-ranlib"
+	apt install -y gcc-11 g++-11 gcc-11-multilib g++-11-multilib
+	ln -svf "/usr/bin/gcc-11" "/usr/bin/gcc"
+	ln -svf "/usr/bin/g++-11" "/usr/bin/g++"
+	ln -svf "/usr/bin/gcc-ar-11" "/usr/bin/gcc-ar"
+	ln -svf "/usr/bin/gcc-nm-11" "/usr/bin/gcc-nm"
+	ln -svf "/usr/bin/gcc-ranlib-11" "/usr/bin/gcc-ranlib"
 	ln -svf "/usr/include/asm-generic" "/usr/include/asm"
 
 	apt install -y clang-13 lldb-13 lld-13 clangd-13
