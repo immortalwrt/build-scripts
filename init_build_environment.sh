@@ -28,14 +28,16 @@ function __warning_msg() {
 function check_system(){
 	__info_msg "Checking system info..."
 
-	if grep -qo "Ubuntu 18.04" "/etc/issue"; then
-		UBUNTU_RELEASE="bionic"
-	elif grep -qo "Ubuntu 20.04" "/etc/issue"; then
-		UBUNTU_RELEASE="focal"
-	else
+	UBUNTU_CODENAME="$(source /etc/os-release; echo "$UBUNTU_CODENAME")"
+	case "$UBUNTU_CODENAME" in
+	"bionic"|"focal"|"jammy")
+		# Nothing to do
+		;;
+	*)
 		__error_msg "Unsupported OS, use Ubuntu 20.04 instead."
 		exit 1
-	fi
+		;;
+	esac
 
 	[ "$(uname -m)" != "x86_64" ] && { __error_msg "Unsupported architecture, use AMD64 instead." && exit 1; }
 
@@ -59,24 +61,24 @@ function update_apt_source(){
 	[ -n "$CHN_NET" ] && {
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 		cat <<-EOF >"/etc/apt/sources.list"
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE main restricted universe multiverse
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-security main restricted universe multiverse
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-updates main restricted universe multiverse
-			# deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-proposed main restricted universe multiverse
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-backports main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-security main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-updates main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-backports main restricted universe multiverse
-			# deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_RELEASE-proposed main restricted universe multiverse
+			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME main restricted universe multiverse
+			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-security main restricted universe multiverse
+			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-updates main restricted universe multiverse
+			# deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-proposed main restricted universe multiverse
+			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-backports main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-security main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-updates main restricted universe multiverse
+			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-backports main restricted universe multiverse
+			# deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-proposed main restricted universe multiverse
 		EOF
 	}
 
 	mkdir -p "/etc/apt/sources.list.d"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-		deb https://deb.nodesource.com/node_16.x $UBUNTU_RELEASE main
-		deb-src https://deb.nodesource.com/node_16.x $UBUNTU_RELEASE main
+		deb https://deb.nodesource.com/node_16.x $UBUNTU_CODENAME main
+		deb-src https://deb.nodesource.com/node_16.x $UBUNTU_CODENAME main
 	EOF
 	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add -
 
@@ -86,20 +88,20 @@ function update_apt_source(){
 	curl -sL "https://dl.yarnpkg.com/debian/pubkey.gpg" | apt-key add -
 
 	cat <<-EOF >"/etc/apt/sources.list.d/gcc-toolchain.list"
-		deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_RELEASE main
-		deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_RELEASE main
+		deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
+		deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
 	EOF
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" | apt-key add -
 
 	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-		deb http://apt.llvm.org/$UBUNTU_RELEASE/ llvm-toolchain-$UBUNTU_RELEASE-13 main
-		deb-src http://apt.llvm.org/$UBUNTU_RELEASE/ llvm-toolchain-$UBUNTU_RELEASE-13 main
+		deb http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-13 main
+		deb-src http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-13 main
 	EOF
 	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" | apt-key add -
 
-	cat <<-EOF >"/etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-$UBUNTU_RELEASE.list"
-		deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_RELEASE main
-		deb-src http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_RELEASE main
+	cat <<-EOF >"/etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-$UBUNTU_CODENAME.list"
+		deb http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_CODENAME main
+		deb-src http://ppa.launchpad.net/longsleep/golang-backports/ubuntu $UBUNTU_CODENAME main
 	EOF
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x52b59b1571a79dbc054901c0f6bc817356a3d45e" | apt-key add -
 
@@ -114,7 +116,11 @@ function install_dependencies(){
 	set -x
 
 	apt full-upgrade -y
-	[ "$UBUNTU_RELEASE" != "bionic" ] && EXTRA_PKG="python2.7" || EXTRA_PKG="python python-pip python-ply"
+	case "$UBUNTU_CODENAME" in
+	"bionic") EXTRA_PKG="python python-pip python-ply lib32gcc1" ;;
+	"focal") EXTRA_PKG="python2.7 lib32gcc1" ;;
+	"jammy") EXTRA_PKG="python2.7 lib32gcc-s1" ;;
+	esac
 	apt install -y $EXTRA_PKG ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
 		bzip2 ccache cmake cpio curl device-tree-compiler ecj fakeroot fastjar flex gawk gettext git gperf \
 		haveged help2man intltool jq lib32gcc1 libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
