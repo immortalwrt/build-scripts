@@ -116,18 +116,13 @@ function install_dependencies(){
 	set -x
 
 	apt full-upgrade -y
-	case "$UBUNTU_CODENAME" in
-	"bionic") EXTRA_PKG="python python-pip python-ply lib32gcc1" ;;
-	"focal") EXTRA_PKG="python2.7 lib32gcc1" ;;
-	"jammy") EXTRA_PKG="python2.7 lib32gcc-s1" ;;
-	esac
-	apt install -y $EXTRA_PKG ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
-		bzip2 ccache cmake cpio curl device-tree-compiler ecj fakeroot fastjar flex gawk gettext git gperf \
-		haveged help2man intltool jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
-		libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev libreadline-dev libssl-dev libtool \
-		libyaml-dev libz-dev lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf libpython3-dev \
-		python3 python3-pip python3-ply python3-docutils qemu-utils quilt re2c rsync scons squashfs-tools \
-		subversion swig texinfo uglifyjs unzip vim wget xmlto xxd zlib1g-dev
+	apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
+		bzip2 ccache cmake cpio curl device-tree-compiler ecj fakeroot fastjar flex gawk gettext git \
+		gperf haveged help2man intltool jq libc6-dev-i386 libelf-dev lib32gcc-s1 libglib2.0-dev libgmp3-dev \
+		libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev libreadline-dev \
+		libssl-dev libtool libyaml-dev libz-dev lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch \
+		pkgconf python2 libpython3-dev python3 python3-pip python3-ply python3-docutils qemu-utils quilt \
+		re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto xxd zlib1g-dev
 
 	apt install -y gcc-11 g++-11 gcc-11-multilib g++-11-multilib
 	ln -svf "/usr/bin/gcc-11" "/usr/bin/gcc"
@@ -149,10 +144,10 @@ function install_dependencies(){
 		yarn config set registry "https://mirrors.tencent.com/npm/" --global
 	}
 
-	apt install -y golang-1.18-go
+	apt install -y golang-1.19-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
-	ln -svf "/usr/lib/go-1.18/bin/go" "/usr/bin/go"
-	ln -svf "/usr/lib/go-1.18/bin/gofmt" "/usr/bin/gofmt"
+	ln -svf "/usr/lib/go-1.19/bin/go" "/usr/bin/go"
+	ln -svf "/usr/lib/go-1.19/bin/gofmt" "/usr/bin/gofmt"
 
 	apt clean -y
 
