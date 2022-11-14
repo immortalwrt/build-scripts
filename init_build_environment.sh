@@ -94,8 +94,8 @@ function update_apt_source(){
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" -o "/etc/apt/trusted.gpg.d/gcc-toolchain.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-		deb http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-13 main
-		deb-src http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-13 main
+		deb http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-14 main
+		deb-src http://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-14 main
 	EOF
 	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
 
@@ -132,11 +132,10 @@ function install_dependencies(){
 	ln -svf "/usr/bin/gcc-ranlib-11" "/usr/bin/gcc-ranlib"
 	ln -svf "/usr/include/asm-generic" "/usr/include/asm"
 
-	apt install -y clang-13 lldb-13 lld-13 clangd-13
-	ln -svf "/usr/bin/clang-13" "/usr/bin/clang"
-	ln -svf "/usr/bin/clangd-13" "/usr/bin/clangd"
-	ln -svf "/usr/bin/clang++-13" "/usr/bin/clang++"
-	ln -svf "/usr/bin/clang-cpp-13" "/usr/bin/clang-cpp"
+	apt install -y clang-14 lldb-14 lld-14 libclang-14-dev
+	ln -svf "/usr/bin/clang-14" "/usr/bin/clang"
+	ln -svf "/usr/bin/clang++-14" "/usr/bin/clang++"
+	ln -svf "/usr/bin/clang-cpp-14" "/usr/bin/clang-cpp"
 
 	apt install -y nodejs yarn
 	[ -n "$CHN_NET" ] && {
