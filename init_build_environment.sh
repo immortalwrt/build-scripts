@@ -130,7 +130,7 @@ function install_dependencies(){
 	ln -svf "/usr/bin/gcc-ar-11" "/usr/bin/gcc-ar"
 	ln -svf "/usr/bin/gcc-nm-11" "/usr/bin/gcc-nm"
 	ln -svf "/usr/bin/gcc-ranlib-11" "/usr/bin/gcc-ranlib"
-	ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
+	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
 	apt install -y clang-14 lldb-14 lld-14 libclang-14-dev
 	ln -svf "/usr/bin/clang-14" "/usr/bin/clang"
