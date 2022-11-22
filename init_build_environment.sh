@@ -157,7 +157,7 @@ function install_dependencies(){
 		exit 1
 	fi
 
-	UPX_REV="3.95"
+	UPX_REV="4.0.1"
 	curl -fLO "https://github.com/upx/upx/releases/download/v${UPX_REV}/upx-$UPX_REV-amd64_linux.tar.xz"
 	tar -Jxf "upx-$UPX_REV-amd64_linux.tar.xz"
 	rm -rf "/usr/bin/upx" "/usr/bin/upx-ucl"
