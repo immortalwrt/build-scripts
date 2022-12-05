@@ -77,8 +77,8 @@ function update_apt_source(){
 	mkdir -p "/etc/apt/sources.list.d"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-		deb https://deb.nodesource.com/node_16.x $UBUNTU_CODENAME main
-		deb-src https://deb.nodesource.com/node_16.x $UBUNTU_CODENAME main
+		deb https://deb.nodesource.com/node_18.x $UBUNTU_CODENAME main
+		deb-src https://deb.nodesource.com/node_18.x $UBUNTU_CODENAME main
 	EOF
 	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" -o "/etc/apt/trusted.gpg.d/nodesource.asc"
 
