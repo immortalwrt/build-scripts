@@ -138,6 +138,11 @@ function install_dependencies(){
 	ln -svf "/usr/bin/clang++-14" "/usr/bin/clang++"
 	ln -svf "/usr/bin/clang-cpp-14" "/usr/bin/clang-cpp"
 
+	apt install -y llvm-14
+	for i in "/usr/bin"/llvm-*-14; do
+		ln -svf "$i" "${i%-14}"
+	done
+
 	apt install -y nodejs yarn
 	[ -n "$CHN_NET" ] && {
 		npm config set registry "https://mirrors.tencent.com/npm/" --global
