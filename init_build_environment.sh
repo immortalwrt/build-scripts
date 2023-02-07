@@ -133,14 +133,14 @@ function install_dependencies(){
 	ln -svf "/usr/bin/gcc-ranlib-11" "/usr/bin/gcc-ranlib"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
-	apt install -y clang-14 lld-14 libclang-14-dev
-	ln -svf "/usr/bin/clang-14" "/usr/bin/clang"
-	ln -svf "/usr/bin/clang++-14" "/usr/bin/clang++"
-	ln -svf "/usr/bin/clang-cpp-14" "/usr/bin/clang-cpp"
+	apt install -y clang-15 lld-15 libclang-15-dev
+	ln -svf "/usr/bin/clang-15" "/usr/bin/clang"
+	ln -svf "/usr/bin/clang++-15" "/usr/bin/clang++"
+	ln -svf "/usr/bin/clang-cpp-15" "/usr/bin/clang-cpp"
 
-	apt install -y llvm-14
-	for i in "/usr/bin"/llvm-*-14; do
-		ln -svf "$i" "${i%-14}"
+	apt install -y llvm-15
+	for i in "/usr/bin"/llvm-*-15; do
+		ln -svf "$i" "${i%-15}"
 	done
 
 	apt install -y nodejs yarn
