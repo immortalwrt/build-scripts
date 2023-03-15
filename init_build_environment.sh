@@ -125,12 +125,12 @@ function install_dependencies(){
 		python3-pyelftools qemu-utils quilt re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
 		unzip vim wget xmlto xxd zlib1g-dev
 
-	apt install -y gcc-11 g++-11 gcc-11-multilib g++-11-multilib
-	ln -svf "/usr/bin/gcc-11" "/usr/bin/gcc"
-	ln -svf "/usr/bin/g++-11" "/usr/bin/g++"
-	ln -svf "/usr/bin/gcc-ar-11" "/usr/bin/gcc-ar"
-	ln -svf "/usr/bin/gcc-nm-11" "/usr/bin/gcc-nm"
-	ln -svf "/usr/bin/gcc-ranlib-11" "/usr/bin/gcc-ranlib"
+	apt install -y gcc-9 g++-9 gcc-9-multilib g++-9-multilib
+	ln -svf "/usr/bin/gcc-9" "/usr/bin/gcc"
+	ln -svf "/usr/bin/g++-9" "/usr/bin/g++"
+	ln -svf "/usr/bin/gcc-ar-9" "/usr/bin/gcc-ar"
+	ln -svf "/usr/bin/gcc-nm-9" "/usr/bin/gcc-nm"
+	ln -svf "/usr/bin/gcc-ranlib-9" "/usr/bin/gcc-ranlib"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
 	apt install -y clang-15 lld-15 libclang-15-dev
