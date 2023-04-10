@@ -131,6 +131,7 @@ function install_dependencies(){
 	ln -svf "/usr/bin/gcc-ar-9" "/usr/bin/gcc-ar"
 	ln -svf "/usr/bin/gcc-nm-9" "/usr/bin/gcc-nm"
 	ln -svf "/usr/bin/gcc-ranlib-9" "/usr/bin/gcc-ranlib"
+	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
 	apt install -y clang-15 lld-15 libclang-15-dev
