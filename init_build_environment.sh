@@ -28,10 +28,24 @@ function __warning_msg() {
 function check_system(){
 	__info_msg "Checking system info..."
 
-	UBUNTU_CODENAME="$(source /etc/os-release; echo "$UBUNTU_CODENAME")"
-	case "$UBUNTU_CODENAME" in
-	"bionic"|"focal"|"jammy")
-		# Nothing to do
+	VERSION_CODENAME="$(source /etc/os-release; echo "$VERSION_CODENAME")"
+	VERSION_PACKAGE="lib32gcc-s1"
+
+	case "$VERSION_CODENAME" in
+	"bionic"|\
+	"focal"|\
+	"jammy")
+		UBUNTU_VERSION="$VERSION_CODENAME"
+		;;
+	"buster")
+		UBUNTU_CODENAME="bionic"
+		VERSION_PACKAGE="lib32gcc1"
+		;;
+	"bullseye")
+		UBUNTU_CODENAME="focal"
+		;;
+	"bookworm")
+		UBUNTU_CODENAME="jammy"
 		;;
 	*)
 		__error_msg "Unsupported OS, use Ubuntu 20.04 instead."
@@ -39,9 +53,9 @@ function check_system(){
 		;;
 	esac
 
-	[ "$(uname -m)" != "x86_64" ] && { __error_msg "Unsupported architecture, use AMD64 instead." && exit 1; }
+	[ "$(uname -m)" == "x86_64" ] || { __error_msg "Unsupported architecture, use AMD64 instead." && exit 1; }
 
-	[ "$(whoami)" != "root" ] && { __error_msg "You must run me as root." && exit 1; }
+	[ "$(whoami)" == "root" ] || { __error_msg "You must run this script as root." && exit 1; }
 }
 
 function check_network(){
@@ -58,27 +72,47 @@ function update_apt_source(){
 
 	apt update -y
 	apt install -y apt-transport-https gnupg2
-	[ -n "$CHN_NET" ] && {
+	if [ -n "$CHN_NET" ]; then
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
-		cat <<-EOF >"/etc/apt/sources.list"
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME main restricted universe multiverse
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-security main restricted universe multiverse
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-updates main restricted universe multiverse
-			# deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-proposed main restricted universe multiverse
-			deb http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-backports main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-security main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-updates main restricted universe multiverse
-			deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-backports main restricted universe multiverse
-			# deb-src http://mirrors.tencent.com/ubuntu/ $UBUNTU_CODENAME-proposed main restricted universe multiverse
-		EOF
-	}
+		if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
+			cat <<-EOF >"/etc/apt/sources.list"
+				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
+				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+
+				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+				deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+
+				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+				deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+
+				# deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+				# deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+
+				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+			EOF
+		else
+			cat <<-EOF > "/etc/apt/sources.list"
+				deb https://mirrors.tencent.com/debian/ $VERSION_CODENAME main contrib
+				deb-src https://mirrors.tencent.com/debian/ $VERSION_CODENAME main contrib
+
+				deb https://mirrors.tencent.com/debian-security $VERSION_CODENAME-security main contrib
+				deb-src https://mirrors.tencent.com/debian-security $VERSION_CODENAME-security main contrib
+
+				deb https://mirrors.tencent.com/debian/ $VERSION_CODENAME-updates main contrib
+				deb-src https://mirrors.tencent.com/debian/ $VERSION_CODENAME-updates main contrib
+
+				deb https://mirrors.tencent.com/debian/ $VERSION_CODENAME-backports main contrib
+				deb-src https://mirrors.tencent.com/debian/ $VERSION_CODENAME-backports main contrib
+			EOF
+		fi
+	fi
 
 	mkdir -p "/etc/apt/sources.list.d"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-		deb https://deb.nodesource.com/node_18.x $UBUNTU_CODENAME main
-		deb-src https://deb.nodesource.com/node_18.x $UBUNTU_CODENAME main
+		deb https://deb.nodesource.com/node_18.x $VERSION_CODENAME main
+		deb-src https://deb.nodesource.com/node_18.x $VERSION_CODENAME main
 	EOF
 	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" -o "/etc/apt/trusted.gpg.d/nodesource.asc"
 
@@ -87,15 +121,17 @@ function update_apt_source(){
 	EOF
 	curl -sL "https://dl.yarnpkg.com/debian/pubkey.gpg" -o "/etc/apt/trusted.gpg.d/yarn.asc"
 
-	cat <<-EOF >"/etc/apt/sources.list.d/gcc-toolchain.list"
-		deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
-		deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
-	EOF
-	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" -o "/etc/apt/trusted.gpg.d/gcc-toolchain.asc"
+	if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
+		cat <<-EOF >"/etc/apt/sources.list.d/gcc-toolchain.list"
+			deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
+			deb-src http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
+		EOF
+		curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" -o "/etc/apt/trusted.gpg.d/gcc-toolchain.asc"
+	fi
 
 	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-		deb https://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-15 main
-		deb-src https://apt.llvm.org/$UBUNTU_CODENAME/ llvm-toolchain-$UBUNTU_CODENAME-15 main
+		deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-15 main
+		deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-15 main
 	EOF
 	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
 
@@ -110,7 +146,7 @@ function update_apt_source(){
 		sed -i "s,http://ppa.launchpad.net,https://launchpad.proxy.ustclug.org,g" "/etc/apt/sources.list.d"/*
 	fi
 
-	apt update -y
+	apt update -y -t $VERSION_CODENAME-backports
 
 	set +x
 }
@@ -118,17 +154,18 @@ function install_dependencies(){
 	__info_msg "Installing dependencies..."
 	set -x
 
-	apt full-upgrade -y
-	apt install -y ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential \
-		bzip2 ccache cmake cpio curl device-tree-compiler ecj fakeroot fastjar flex gawk gettext git \
-		gnutls-dev gperf haveged help2man intltool jq libc6-dev-i386 libelf-dev lib32gcc-s1 libglib2.0-dev \
-		libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev \
-		libreadline-dev libssl-dev libtool libyaml-dev libz-dev lrzsz mkisofs msmtp nano ninja-build \
-		p7zip p7zip-full patch pkgconf python2 libpython3-dev python3 python3-pip python3-ply python3-docutils \
-		python3-pyelftools qemu-utils quilt re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs \
-		unzip vim wget xmlto xxd zlib1g-dev
+	apt full-upgrade -y -t $VERSION_CODENAME-backports
+	apt install -y -t $VERSION_CODENAME-backports ack antlr3 asciidoc autoconf automake autopoint \
+		binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler ecj \
+		fakeroot fastjar flex gawk gettext genisoimage git gnutls-dev gperf haveged help2man \
+		intltool jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev \
+		libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev libreadline-dev libssl-dev \
+		libtool libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch pkgconf \
+		python2 libpython3-dev python3 python3-pip python3-ply python3-docutils python3-pyelftools \
+		qemu-utils quilt re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs unzip \
+		vim wget xmlto xxd zlib1g-dev $VERSION_PACKAGE
 
-	apt install -y gcc-9 g++-9 gcc-9-multilib g++-9-multilib
+	apt install -y -t $VERSION_CODENAME-backports gcc-9 g++-9 gcc-9-multilib g++-9-multilib
 	ln -svf "/usr/bin/gcc-9" "/usr/bin/gcc"
 	ln -svf "/usr/bin/g++-9" "/usr/bin/g++"
 	ln -svf "/usr/bin/gcc-ar-9" "/usr/bin/gcc-ar"
@@ -137,23 +174,23 @@ function install_dependencies(){
 	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
-	apt install -y clang-15 lld-15 libclang-15-dev
+	apt install -y -t $VERSION_CODENAME-backports clang-15 lld-15 libclang-15-dev
 	ln -svf "/usr/bin/clang-15" "/usr/bin/clang"
 	ln -svf "/usr/bin/clang++-15" "/usr/bin/clang++"
 	ln -svf "/usr/bin/clang-cpp-15" "/usr/bin/clang-cpp"
 
-	apt install -y llvm-15
+	apt install -y -t $VERSION_CODENAME-backports llvm-15
 	for i in "/usr/bin"/llvm-*-15; do
 		ln -svf "$i" "${i%-15}"
 	done
 
-	apt install -y nodejs yarn
-	[ -n "$CHN_NET" ] && {
+	apt install -y -t $VERSION_CODENAME-backports nodejs yarn
+	if [ -n "$CHN_NET" ]; then
 		npm config set registry "https://mirrors.tencent.com/npm/" --global
 		yarn config set registry "https://mirrors.tencent.com/npm/" --global
-	}
+	fi
 
-	apt install -y golang-1.20-go
+	apt install -y -t $VERSION_CODENAME-backports golang-1.20-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
 	ln -svf "/usr/lib/go-1.20/bin/go" "/usr/bin/go"
 	ln -svf "/usr/lib/go-1.20/bin/gofmt" "/usr/bin/gofmt"
@@ -175,7 +212,7 @@ function install_dependencies(){
 	chmod 0755 "/usr/bin/upx-ucl"
 	ln -svf "/usr/bin/upx-ucl" "/usr/bin/upx"
 
-	svn co -r96154 "https://github.com/openwrt/openwrt/trunk/tools/padjffs2/src" "padjffs2"
+	svn co -r161078 "https://github.com/openwrt/openwrt/trunk/tools/padjffs2/src" "padjffs2"
 	pushd "padjffs2"
 	make
 	rm -rf "/usr/bin/padjffs2"
