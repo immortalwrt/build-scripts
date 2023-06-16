@@ -35,7 +35,7 @@ function check_system(){
 	"bionic"|\
 	"focal"|\
 	"jammy")
-		UBUNTU_VERSION="$VERSION_CODENAME"
+		UBUNTU_CODENAME="$VERSION_CODENAME"
 		;;
 	"buster")
 		UBUNTU_CODENAME="bionic"
@@ -76,20 +76,20 @@ function update_apt_source(){
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 		if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
 			cat <<-EOF >"/etc/apt/sources.list"
-				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
-				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
+				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
 
-				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
-				deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
 
-				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
-				deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
 
-				# deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
-				# deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+				# deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+				# deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
 
-				deb http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
-				deb-src http://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
 			EOF
 		else
 			cat <<-EOF > "/etc/apt/sources.list"
@@ -146,7 +146,8 @@ function update_apt_source(){
 		sed -i "s,http://ppa.launchpad.net,https://launchpad.proxy.ustclug.org,g" "/etc/apt/sources.list.d"/*
 	fi
 
-	apt update -y -t $VERSION_CODENAME-backports
+	! grep -q "$VERSION_CODENAME-backports" "/etc/apt/sources.list" || BPO_FLAG="-t $VERSION_CODENAME-backports"
+	apt update -y $BPO_FLAG
 
 	set +x
 }
@@ -154,8 +155,8 @@ function install_dependencies(){
 	__info_msg "Installing dependencies..."
 	set -x
 
-	apt full-upgrade -y -t $VERSION_CODENAME-backports
-	apt install -y -t $VERSION_CODENAME-backports ack antlr3 asciidoc autoconf automake autopoint \
+	apt full-upgrade -y $BPO_FLAG
+	apt install -y $BPO_FLAG ack antlr3 asciidoc autoconf automake autopoint \
 		binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler ecj \
 		fakeroot fastjar flex gawk gettext genisoimage git gnutls-dev gperf haveged help2man \
 		intltool jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev \
@@ -165,7 +166,7 @@ function install_dependencies(){
 		qemu-utils quilt re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs unzip \
 		vim wget xmlto xxd zlib1g-dev $VERSION_PACKAGE
 
-	apt install -y -t $VERSION_CODENAME-backports gcc-9 g++-9 gcc-9-multilib g++-9-multilib
+	apt install -y $BPO_FLAG gcc-9 g++-9 gcc-9-multilib g++-9-multilib
 	ln -svf "/usr/bin/gcc-9" "/usr/bin/gcc"
 	ln -svf "/usr/bin/g++-9" "/usr/bin/g++"
 	ln -svf "/usr/bin/gcc-ar-9" "/usr/bin/gcc-ar"
@@ -174,23 +175,23 @@ function install_dependencies(){
 	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
-	apt install -y -t $VERSION_CODENAME-backports clang-15 lld-15 libclang-15-dev
+	apt install -y $BPO_FLAG clang-15 lld-15 libclang-15-dev
 	ln -svf "/usr/bin/clang-15" "/usr/bin/clang"
 	ln -svf "/usr/bin/clang++-15" "/usr/bin/clang++"
 	ln -svf "/usr/bin/clang-cpp-15" "/usr/bin/clang-cpp"
 
-	apt install -y -t $VERSION_CODENAME-backports llvm-15
+	apt install -y $BPO_FLAG llvm-15
 	for i in "/usr/bin"/llvm-*-15; do
 		ln -svf "$i" "${i%-15}"
 	done
 
-	apt install -y -t $VERSION_CODENAME-backports nodejs yarn
+	apt install -y $BPO_FLAG nodejs yarn
 	if [ -n "$CHN_NET" ]; then
 		npm config set registry "https://mirrors.tencent.com/npm/" --global
 		yarn config set registry "https://mirrors.tencent.com/npm/" --global
 	fi
 
-	apt install -y -t $VERSION_CODENAME-backports golang-1.20-go
+	apt install -y $BPO_FLAG golang-1.20-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
 	ln -svf "/usr/lib/go-1.20/bin/go" "/usr/bin/go"
 	ln -svf "/usr/lib/go-1.20/bin/gofmt" "/usr/bin/gofmt"
