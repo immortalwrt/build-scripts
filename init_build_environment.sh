@@ -76,34 +76,34 @@ function update_apt_source(){
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 		if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
 			cat <<-EOF >"/etc/apt/sources.list"
-				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
-				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
+				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
+				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
 
-				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
-				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
 
-				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
-				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
 
-				# deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
-				# deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+				# deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+				# deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
 
-				deb https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
-				deb-src https://mirrors.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
 			EOF
 		else
 			cat <<-EOF > "/etc/apt/sources.list"
-				deb https://mirrors.tencent.com/debian/ $VERSION_CODENAME main contrib
-				deb-src https://mirrors.tencent.com/debian/ $VERSION_CODENAME main contrib
+				deb https://repo.huaweicloud.com/debian/ $VERSION_CODENAME main contrib
+				deb-src https://repo.huaweicloud.com/debian/ $VERSION_CODENAME main contrib
 
-				deb https://mirrors.tencent.com/debian-security $VERSION_CODENAME-security main contrib
-				deb-src https://mirrors.tencent.com/debian-security $VERSION_CODENAME-security main contrib
+				deb https://repo.huaweicloud.com/debian-security $VERSION_CODENAME-security main contrib
+				deb-src https://repo.huaweicloud.com/debian-security $VERSION_CODENAME-security main contrib
 
-				deb https://mirrors.tencent.com/debian/ $VERSION_CODENAME-updates main contrib
-				deb-src https://mirrors.tencent.com/debian/ $VERSION_CODENAME-updates main contrib
+				deb https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-updates main contrib
+				deb-src https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-updates main contrib
 
-				deb https://mirrors.tencent.com/debian/ $VERSION_CODENAME-backports main contrib
-				deb-src https://mirrors.tencent.com/debian/ $VERSION_CODENAME-backports main contrib
+				deb https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-backports main contrib
+				deb-src https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-backports main contrib
 			EOF
 		fi
 	fi
@@ -193,8 +193,8 @@ function install_dependencies(){
 
 	apt install -y $BPO_FLAG nodejs yarn
 	if [ -n "$CHN_NET" ]; then
-		npm config set registry "https://mirrors.tencent.com/npm/" --global
-		yarn config set registry "https://mirrors.tencent.com/npm/" --global
+		npm config set registry "https://registry.npmmirror.com" --global
+		yarn config set registry "https://registry.npmmirror.com" --global
 	fi
 
 	apt install -y $BPO_FLAG golang-1.20-go
