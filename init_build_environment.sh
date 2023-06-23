@@ -172,6 +172,11 @@ function install_dependencies(){
 		qemu-utils quilt re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs unzip \
 		vim wget xmlto xxd zlib1g-dev $VERSION_PACKAGE
 
+	if [ -n "$CHN_NET" ]; then
+		pip3 config set global.index-url "https://mirrors.aliyun.com/pypi/simple/"
+		pip3 config set install.trusted-host "https://mirrors.aliyun.com"
+	fi
+
 	apt install -y $BPO_FLAG gcc-9 g++-9 gcc-9-multilib g++-9-multilib
 	ln -svf "/usr/bin/gcc-9" "/usr/bin/gcc"
 	ln -svf "/usr/bin/g++-9" "/usr/bin/g++"
@@ -201,6 +206,9 @@ function install_dependencies(){
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
 	ln -svf "/usr/lib/go-1.20/bin/go" "/usr/bin/go"
 	ln -svf "/usr/lib/go-1.20/bin/gofmt" "/usr/bin/gofmt"
+	if [ -n "$CHN_NET" ]; then
+		go env -w GOPROXY=https://goproxy.cn,direct
+	fi
 
 	apt clean -y
 
