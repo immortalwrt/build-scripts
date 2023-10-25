@@ -178,18 +178,16 @@ function install_dependencies(){
 	fi
 
 	apt install -y $BPO_FLAG gcc-9 g++-9 gcc-9-multilib g++-9-multilib
-	ln -svf "/usr/bin/gcc-9" "/usr/bin/gcc"
-	ln -svf "/usr/bin/g++-9" "/usr/bin/g++"
-	ln -svf "/usr/bin/gcc-ar-9" "/usr/bin/gcc-ar"
-	ln -svf "/usr/bin/gcc-nm-9" "/usr/bin/gcc-nm"
-	ln -svf "/usr/bin/gcc-ranlib-9" "/usr/bin/gcc-ranlib"
+	for i in "gcc-9" "g++-9" "gcc-ar-9" "gcc-nm-9" "gcc-ranlib-9"; do
+		ln -svf "$i" "/usr/bin/${i%-9}"
+	done
 	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
 	apt install -y $BPO_FLAG clang-15 lld-15 libclang-15-dev
-	ln -svf "/usr/bin/clang-15" "/usr/bin/clang"
-	ln -svf "/usr/bin/clang++-15" "/usr/bin/clang++"
-	ln -svf "/usr/bin/clang-cpp-15" "/usr/bin/clang-cpp"
+	for i in "clang-15" "clang++15" "clang-cpp-15" "ld.lld-15" "ld64.lld-15" "lld-15" "lld-link-15"; do
+		ln -svf "$i" "/usr/bin/${i%-15}"
+	done
 
 	apt install -y $BPO_FLAG llvm-15
 	for i in "/usr/bin"/llvm-*-15; do
@@ -202,10 +200,10 @@ function install_dependencies(){
 		yarn config set registry "https://registry.npmmirror.com" --global
 	fi
 
-	apt install -y $BPO_FLAG golang-1.20-go
+	apt install -y $BPO_FLAG golang-1.21-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
-	ln -svf "/usr/lib/go-1.20/bin/go" "/usr/bin/go"
-	ln -svf "/usr/lib/go-1.20/bin/gofmt" "/usr/bin/gofmt"
+	ln -svf "/usr/lib/go-1.21/bin/go" "/usr/bin/go"
+	ln -svf "/usr/lib/go-1.21/bin/gofmt" "/usr/bin/gofmt"
 	if [ -n "$CHN_NET" ]; then
 		go env -w GOPROXY=https://goproxy.cn,direct
 	fi
@@ -219,7 +217,7 @@ function install_dependencies(){
 		exit 1
 	fi
 
-	UPX_REV="4.0.1"
+	UPX_REV="4.1.0"
 	curl -fLO "https://github.com/upx/upx/releases/download/v${UPX_REV}/upx-$UPX_REV-amd64_linux.tar.xz"
 	tar -Jxf "upx-$UPX_REV-amd64_linux.tar.xz"
 	rm -rf "/usr/bin/upx" "/usr/bin/upx-ucl"
