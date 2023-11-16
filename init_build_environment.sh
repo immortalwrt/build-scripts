@@ -136,8 +136,8 @@ function update_apt_source(){
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xe1dd270288b4e6030699e45fa1715d88e1df1f24" -o "/etc/apt/trusted.gpg.d/git-core-ubuntu-ppa.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-		deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-15 main
-		deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-15 main
+		deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-16 main
+		deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-16 main
 	EOF
 	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
 
@@ -184,14 +184,14 @@ function install_dependencies(){
 	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
-	apt install -y $BPO_FLAG clang-15 lld-15 libclang-15-dev
-	for i in "clang-15" "clang++15" "clang-cpp-15" "ld.lld-15" "ld64.lld-15" "lld-15" "lld-link-15"; do
-		ln -svf "$i" "/usr/bin/${i%-15}"
+	apt install -y $BPO_FLAG clang-16 lld-16 libclang-16-dev
+	for i in "clang-16" "clang++16" "clang-cpp-16" "ld.lld-16" "ld64.lld-16" "wasm-ld-16" "lld-16" "lld-link-16"; do
+		ln -svf "$i" "/usr/bin/${i%-16}"
 	done
 
-	apt install -y $BPO_FLAG llvm-15
-	for i in "/usr/bin"/llvm-*-15; do
-		ln -svf "$i" "${i%-15}"
+	apt install -y $BPO_FLAG llvm-16
+	for i in "/usr/bin"/llvm-*-16; do
+		ln -svf "$i" "${i%-16}"
 	done
 
 	apt install -y $BPO_FLAG nodejs yarn
