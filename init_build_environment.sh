@@ -170,7 +170,7 @@ function install_dependencies(){
 		libtool libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch pkgconf \
 		python2 libpython3-dev python3 python3-pip python3-ply python3-docutils python3-pyelftools \
 		qemu-utils quilt re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs unzip \
-		vim wget xmlto xxd zlib1g-dev $VERSION_PACKAGE
+		vim wget xmlto zlib1g-dev zstd xxd $VERSION_PACKAGE
 
 	if [ -n "$CHN_NET" ]; then
 		pip3 config set global.index-url "https://mirrors.aliyun.com/pypi/simple/"
