@@ -1,6 +1,6 @@
 [submodule "maintainer-tools"]
 	path = maintainer-tools
-	url = https://gitlab.com/openwrt/maintainer-tools.git
+	url = https://git.openwrt.org/maintainer-tools.git
 [submodule "buildscripts"]
 	path = buildscripts
 	url = https://github.com/openwrt/buildscripts.git
