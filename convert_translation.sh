@@ -1,6 +1,5 @@
 #!/bin/bash
-# [CTCGFW]Project-OpenWrt
-# Use it under GPLv3, please.
+# SPDX-License-Identifier: GPL-2.0-only
 # --------------------------------------------------------
 # Convert translation files zh-cn to zh_Hans
 # The script is still in testing, welcome to report bugs.

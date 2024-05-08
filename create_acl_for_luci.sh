@@ -1,6 +1,5 @@
 #!/bin/bash
-# [CTCGFW]Project-OpenWrt
-# Use it under GPLv3, please.
+# SPDX-License-Identifier: GPL-2.0-only
 # --------------------------------------------------------
 # Script for creating ACL file for each LuCI APP
 
