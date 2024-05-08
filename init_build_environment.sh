@@ -25,7 +25,7 @@ function __warning_msg() {
 	echo -e "${YELLOW_COLOR}[WARNING]${DEFAULT_COLOR} $*"
 }
 
-function check_system(){
+function check_system() {
 	__info_msg "Checking system info..."
 
 	VERSION_CODENAME="$(source /etc/os-release; echo "$VERSION_CODENAME")"
@@ -58,7 +58,7 @@ function check_system(){
 	[ "$(whoami)" == "root" ] || { __error_msg "You must run this script as root." && exit 1; }
 }
 
-function check_network(){
+function check_network() {
 	__info_msg "Checking network..."
 
 	curl -s "myip.ipip.net" | grep -qo "中国" && CHN_NET=1
@@ -66,7 +66,7 @@ function check_network(){
 	curl --connect-timeout 10 "google.com" > "/dev/null" 2>&1 || { __warning_msg "Your network is not suitable for compiling OpenWrt!"; }
 }
 
-function update_apt_source(){
+function update_apt_source() {
 	__info_msg "Updating apt source lists..."
 	set -x
 
@@ -111,8 +111,8 @@ function update_apt_source(){
 	mkdir -p "/etc/apt/sources.list.d"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-		deb https://deb.nodesource.com/node_18.x $VERSION_CODENAME main
-		deb-src https://deb.nodesource.com/node_18.x $VERSION_CODENAME main
+		deb https://deb.nodesource.com/node_20.x $VERSION_CODENAME main
+		deb-src https://deb.nodesource.com/node_20.x $VERSION_CODENAME main
 	EOF
 	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" -o "/etc/apt/trusted.gpg.d/nodesource.asc"
 
@@ -157,7 +157,7 @@ function update_apt_source(){
 
 	set +x
 }
-function install_dependencies(){
+function install_dependencies() {
 	__info_msg "Installing dependencies..."
 	set -x
 
@@ -249,7 +249,7 @@ function install_dependencies(){
 	cp -fp "po2lmo" "/usr/bin/po2lmo"
 	popd
 
-	curl -fL "https://build-scripts.immortalwrt.eu.org/modify-firmware.sh" -o "/usr/bin/modify-firmware"
+	curl -fL "https://build-scripts.immortalwrt.org/modify-firmware.sh" -o "/usr/bin/modify-firmware"
 	chmod 0755 "/usr/bin/modify-firmware"
 
 	popd
@@ -258,7 +258,7 @@ function install_dependencies(){
 	set +x
 	__success_msg "All dependencies have been installed."
 }
-function main(){
+function main() {
 	check_system
 	check_network
 	update_apt_source
