@@ -34,6 +34,7 @@ function check_system() {
 	case "$VERSION_CODENAME" in
 	"bionic"|\
 	"focal"|\
+	"noble"|\
 	"jammy")
 		UBUNTU_CODENAME="$VERSION_CODENAME"
 		;;
