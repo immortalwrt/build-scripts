@@ -29,24 +29,46 @@ function check_system() {
 	__info_msg "Checking system info..."
 
 	VERSION_CODENAME="$(source /etc/os-release; echo "$VERSION_CODENAME")"
-	VERSION_PACKAGE="lib32gcc-s1"
 
 	case "$VERSION_CODENAME" in
-	"bionic"|\
-	"focal"|\
-	"noble"|\
-	"jammy")
+	"bionic")
+		GCC_VERSION="9"
+		NODE_DISTRO="$VERSION_CODENAME"
+		NODE_KEY="nodesource.gpg.key"
+		NODE_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
+		VERSION_PACKAGE="lib32gcc-s1 python2.7"
 		;;
 	"buster")
+		BPO_FLAG="-t $VERSION_CODENAME-backports"
+		DISTRO_PREFIX="debian-archive/"
+		DISTRO_SECUTIRY_PATH="buster/updates"
+		GCC_VERSION="8"
 		UBUNTU_CODENAME="bionic"
-		VERSION_PACKAGE="lib32gcc1"
+		VERSION_PACKAGE="lib32gcc1 python2"
+		;;
+	"focal"|\
+	"jammy")
+		GCC_VERSION="9"
+		UBUNTU_CODENAME="$VERSION_CODENAME"
+		VERSION_PACKAGE="lib32gcc-s1 python2"
 		;;
 	"bullseye")
+		BPO_FLAG="-t $VERSION_CODENAME-backports"
+		GCC_VERSION="9"
 		UBUNTU_CODENAME="focal"
+		VERSION_PACKAGE="lib32gcc-s1 python2"
 		;;
 	"bookworm")
+		BPO_FLAG="-t $VERSION_CODENAME-backports"
+		GCC_VERSION="12"
 		UBUNTU_CODENAME="jammy"
+		VERSION_PACKAGE="lib32gcc-s1"
+		;;
+	"noble")
+		GCC_VERSION="12"
+		UBUNTU_CODENAME="$VERSION_CODENAME"
+		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	*)
 		__error_msg "Unsupported OS, use Ubuntu 20.04 instead."
@@ -94,17 +116,17 @@ function update_apt_source() {
 			EOF
 		else
 			cat <<-EOF > "/etc/apt/sources.list"
-				deb https://repo.huaweicloud.com/debian/ $VERSION_CODENAME main contrib
-				deb-src https://repo.huaweicloud.com/debian/ $VERSION_CODENAME main contrib
+				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
+				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
 
-				deb https://repo.huaweicloud.com/debian-security $VERSION_CODENAME-security main contrib
-				deb-src https://repo.huaweicloud.com/debian-security $VERSION_CODENAME-security main contrib
+				deb https://repo.huaweicloud.com/debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
+				deb-src https://repo.huaweicloud.com/debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
 
-				deb https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-updates main contrib
-				deb-src https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-updates main contrib
+				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
+				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
 
-				deb https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-backports main contrib
-				deb-src https://repo.huaweicloud.com/debian/ $VERSION_CODENAME-backports main contrib
+				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
+				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
 			EOF
 		fi
 	fi
@@ -112,17 +134,16 @@ function update_apt_source() {
 	mkdir -p "/etc/apt/sources.list.d"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-		deb https://deb.nodesource.com/node_20.x $VERSION_CODENAME main
-		deb-src https://deb.nodesource.com/node_20.x $VERSION_CODENAME main
+		deb https://deb.nodesource.com/node_${NODE_VERSION:-20}.x ${NODE_DISTRO:-nodistro} main
 	EOF
-	curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" -o "/etc/apt/trusted.gpg.d/nodesource.asc"
+	curl -sL "https://deb.nodesource.com/gpgkey/${NODE_KEY:-nodesource-repo.gpg.key}" -o "/etc/apt/trusted.gpg.d/nodesource.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/yarn.list"
 		deb https://dl.yarnpkg.com/debian/ stable main
 	EOF
 	curl -sL "https://dl.yarnpkg.com/debian/pubkey.gpg" -o "/etc/apt/trusted.gpg.d/yarn.asc"
 
-	if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
+	if [ "$VERSION_CODENAME" == "bionic" ]; then
 		cat <<-EOF >"/etc/apt/sources.list.d/gcc-toolchain.list"
 			deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
 			deb-src https://ppa.launchpadcontent.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
@@ -137,8 +158,8 @@ function update_apt_source() {
 	curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xe1dd270288b4e6030699e45fa1715d88e1df1f24" -o "/etc/apt/trusted.gpg.d/git-core-ubuntu-ppa.asc"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-		deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-16 main
-		deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-16 main
+		deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-18 main
+		deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-18 main
 	EOF
 	curl -sL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
 
@@ -153,7 +174,6 @@ function update_apt_source() {
 		sed -i "s,ppa.launchpadcontent.net,launchpad.proxy.ustclug.org,g" "/etc/apt/sources.list.d"/*
 	fi
 
-	! grep -q "$VERSION_CODENAME-backports" "/etc/apt/sources.list" || BPO_FLAG="-t $VERSION_CODENAME-backports"
 	apt update -y $BPO_FLAG
 
 	set +x
@@ -167,32 +187,32 @@ function install_dependencies() {
 		binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler ecj \
 		fakeroot fastjar flex gawk gettext genisoimage git gnutls-dev gperf haveged help2man \
 		intltool jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev \
-		libmpfr-dev libncurses5-dev libncursesw5 libncursesw5-dev libreadline-dev libssl-dev \
-		libtool libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch pkgconf \
-		python2 libpython3-dev python3 python3-pip python3-ply python3-docutils python3-pyelftools \
-		qemu-utils quilt re2c rsync scons squashfs-tools subversion swig texinfo uglifyjs unzip \
-		vim wget xmlto zlib1g-dev zstd xxd $VERSION_PACKAGE
+		libmpfr-dev libncurses-dev libreadline-dev libssl-dev libtool libyaml-dev libz-dev lrzsz \
+		msmtp nano ninja-build p7zip p7zip-full patch pkgconf libpython3-dev python3 python3-pip \
+		python3-ply python3-docutils python3-pyelftools qemu-utils quilt re2c rsync scons \
+		squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto zlib1g-dev zstd \
+		xxd $VERSION_PACKAGE
 
 	if [ -n "$CHN_NET" ]; then
 		pip3 config set global.index-url "https://mirrors.aliyun.com/pypi/simple/"
 		pip3 config set install.trusted-host "https://mirrors.aliyun.com"
 	fi
 
-	apt install -y $BPO_FLAG gcc-9 g++-9 gcc-9-multilib g++-9-multilib
-	for i in "gcc-9" "g++-9" "gcc-ar-9" "gcc-nm-9" "gcc-ranlib-9"; do
-		ln -svf "$i" "/usr/bin/${i%-9}"
+	apt install -y $BPO_FLAG "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-$GCC_VERSION-multilib" "g++-$GCC_VERSION-multilib"
+	for i in "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-ar-$GCC_VERSION" "gcc-nm-$GCC_VERSION" "gcc-ranlib-$GCC_VERSION"; do
+		ln -svf "$i" "/usr/bin/${i%-$GCC_VERSION}"
 	done
 	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
-	apt install -y $BPO_FLAG clang-16 libclang-16-dev lld-16 liblld-16-dev
-	for i in "clang-16" "clang++-16" "clang-cpp-16" "ld.lld-16" "ld64.lld-16" "wasm-ld-16" "lld-16" "lld-link-16"; do
-		ln -svf "$i" "/usr/bin/${i%-16}"
+	apt install -y $BPO_FLAG clang-18 libclang-18-dev lld-18 liblld-18-dev
+	for i in "clang-18" "clang++-18" "clang-cpp-18" "ld.lld-18" "ld64.lld-18" "wasm-ld-18" "lld-18" "lld-link-18"; do
+		ln -svf "$i" "/usr/bin/${i%-18}"
 	done
 
-	apt install -y $BPO_FLAG llvm-16
-	for i in "/usr/bin"/llvm-*-16; do
-		ln -svf "$i" "${i%-16}"
+	apt install -y $BPO_FLAG llvm-18
+	for i in "/usr/bin"/llvm-*-18; do
+		ln -svf "$i" "${i%-18}"
 	done
 
 	apt install -y $BPO_FLAG nodejs yarn
@@ -201,10 +221,10 @@ function install_dependencies() {
 		yarn config set registry "https://registry.npmmirror.com" --global
 	fi
 
-	apt install -y $BPO_FLAG golang-1.22-go
+	apt install -y $BPO_FLAG golang-1.23-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
-	ln -svf "/usr/lib/go-1.22/bin/go" "/usr/bin/go"
-	ln -svf "/usr/lib/go-1.22/bin/gofmt" "/usr/bin/gofmt"
+	ln -svf "/usr/lib/go-1.23/bin/go" "/usr/bin/go"
+	ln -svf "/usr/lib/go-1.23/bin/gofmt" "/usr/bin/gofmt"
 	if [ -n "$CHN_NET" ]; then
 		go env -w GOPROXY=https://goproxy.cn,direct
 	fi
