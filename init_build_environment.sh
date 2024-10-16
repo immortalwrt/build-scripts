@@ -212,7 +212,7 @@ function install_dependencies() {
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
 	apt install -y $BPO_FLAG clang-18 libclang-18-dev lld-18 liblld-18-dev
-	for i in "clang-18" "clang++-18" "clang-cpp-18" "ld.lld-18" "ld64.lld-18" "wasm-ld-18" "lld-18" "lld-link-18"; do
+	for i in "clang-18" "clang++-18" "clang-cpp-18" "ld.lld-18" "ld64.lld-18" "lld-18" "lld-link-18" "opt-18" "wasm-ld-18"; do
 		ln -svf "$i" "/usr/bin/${i%-18}"
 	done
 
