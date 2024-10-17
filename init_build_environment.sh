@@ -37,7 +37,7 @@ function check_system() {
 		NODE_KEY="nodesource.gpg.key"
 		NODE_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
-		VERSION_PACKAGE="lib32gcc-s1 python2.7"
+		VERSION_PACKAGE="lib32gcc-s1 libpython3.6-dev python2.7 python3.6"
 		;;
 	"buster")
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
@@ -212,7 +212,7 @@ function install_dependencies() {
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
 	apt install -y $BPO_FLAG clang-18 libclang-18-dev lld-18 liblld-18-dev
-	for i in "clang-18" "clang++-18" "clang-cpp-18" "ld.lld-18" "ld64.lld-18" "lld-18" "lld-link-18" "opt-18" "wasm-ld-18"; do
+	for i in "clang-18" "clang++-18" "clang-cpp-18" "ld.lld-18" "ld64.lld-18" "llc-18" "lld-18" "lld-link-18" "opt-18" "wasm-ld-18"; do
 		ln -svf "$i" "/usr/bin/${i%-18}"
 	done
 
