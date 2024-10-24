@@ -190,8 +190,8 @@ function install_dependencies() {
 		libmpc-dev libmpfr-dev libncurses-dev libreadline-dev libssl-dev libtool \
 		libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch \
 		pkgconf libpython3-dev python3 python3-pip python3-ply python3-docutils \
-		python3-pyelftools qemu-utils quilt re2c rsync scons squashfs-tools subversion \
-		swig texinfo uglifyjs unzip vim wget xmlto zlib1g-dev zstd xxd $VERSION_PACKAGE
+		python3-pyelftools qemu-utils quilt re2c rsync scons sharutils squashfs-tools \
+		subversion swig texinfo uglifyjs unzip vim wget xmlto zlib1g-dev zstd xxd $VERSION_PACKAGE
 
 	# fix broken http2 support for curl on buster
 	if [ "$VERSION_CODENAME" == "buster"]; then
