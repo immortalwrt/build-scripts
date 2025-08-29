@@ -66,7 +66,7 @@ function check_system() {
 		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	"noble")
-		GCC_VERSION="12"
+		GCC_VERSION="13"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
 		VERSION_PACKAGE="lib32gcc-s1"
 		;;
@@ -136,7 +136,7 @@ function update_apt_source() {
 	mkdir -p "/etc/apt/trusted.gpg.d"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
-		deb https://deb.nodesource.com/node_${NODE_VERSION:-20}.x ${NODE_DISTRO:-nodistro} main
+		deb https://deb.nodesource.com/node_${NODE_VERSION:-22}.x ${NODE_DISTRO:-nodistro} main
 	EOF
 	curl -fsL "https://deb.nodesource.com/gpgkey/${NODE_KEY:-nodesource-repo.gpg.key}" -o "/etc/apt/trusted.gpg.d/nodesource.asc"
 
@@ -235,10 +235,10 @@ function install_dependencies() {
 		yarn config set registry "https://registry.npmmirror.com" --global
 	fi
 
-	apt install -y $BPO_FLAG golang-1.24-go
+	apt install -y $BPO_FLAG golang-1.25-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
-	ln -svf "/usr/lib/go-1.24/bin/go" "/usr/bin/go"
-	ln -svf "/usr/lib/go-1.24/bin/gofmt" "/usr/bin/gofmt"
+	ln -svf "/usr/lib/go-1.25/bin/go" "/usr/bin/go"
+	ln -svf "/usr/lib/go-1.25/bin/gofmt" "/usr/bin/gofmt"
 	if [ -n "$CHN_NET" ]; then
 		go env -w GOPROXY=https://goproxy.cn,direct
 	fi
@@ -254,7 +254,7 @@ function install_dependencies() {
 		exit 1
 	fi
 
-	UPX_REV="4.2.4"
+	UPX_REV="5.0.2"
 	curl -fLO "https://github.com/upx/upx/releases/download/v${UPX_REV}/upx-$UPX_REV-amd64_linux.tar.xz"
 	tar -Jxf "upx-$UPX_REV-amd64_linux.tar.xz"
 	rm -rf "/usr/bin/upx" "/usr/bin/upx-ucl"
