@@ -250,15 +250,11 @@ function install_dependencies() {
 	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
-	apt install -y $BPO_FLAG "clang-$LLVM_VERSION" "libclang-$LLVM_VERSION-dev" "lld-$LLVM_VERSION" "liblld-$LLVM_VERSION-dev"
-	for i in "clang-$LLVM_VERSION" "clang++-$LLVM_VERSION" "clang-cpp-$LLVM_VERSION" "ld.lld-$LLVM_VERSION" "ld64.lld-$LLVM_VERSION" "llc-$LLVM_VERSION" "lld-$LLVM_VERSION" "lld-link-$LLVM_VERSION" "opt-$LLVM_VERSION" "wasm-ld-$LLVM_VERSION"; do
-		ln -svf "$i" "/usr/bin/${i%-$LLVM_VERSION}"
+	apt install -y $BPO_FLAG "clang-$LLVM_VERSION" "libclang-$LLVM_VERSION-dev" "lld-$LLVM_VERSION" "liblld-$LLVM_VERSION-dev" "llvm-$LLVM_VERSION"
+	for i in "/usr/lib/llvm-$LLVM_VERSION/bin"/*; do
+		ln -svf "$i" "/usr/bin/${i##*/}"
 	done
-
-	apt install -y $BPO_FLAG "llvm-$LLVM_VERSION"
-	for i in "/usr/bin"/llvm-*-"$LLVM_VERSION"; do
-		ln -svf "$i" "${i%-$LLVM_VERSION}"
-	done
+	ln -svf "/usr/lib/llvm-$LLVM_VERSION" "/usr/lib/llvm"
 
 	apt install -y --allow-unauthenticated $BPO_FLAG nodejs yarn
 	if [ -n "$CHN_NET" ]; then
