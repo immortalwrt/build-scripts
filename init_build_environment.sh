@@ -112,6 +112,7 @@ function update_apt_source() {
 	if [ -n "$CHN_NET" ]; then
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 		mv "/etc/apt/sources.list.d/debian.sources" "/etc/apt/sources.list.d/debian.sources.bak"
+		mv "/etc/apt/sources.list.d/ubuntu.sources" "/etc/apt/sources.list.d/ubuntu.sources.bak"
 		if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
 			cat <<-EOF >"/etc/apt/sources.list"
 				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
