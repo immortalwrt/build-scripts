@@ -33,6 +33,7 @@ function check_system() {
 	case "$VERSION_CODENAME" in
 	"bionic")
 		GCC_VERSION="9"
+		LLVM_VERSION="18"
 		NODE_DISTRO="$VERSION_CODENAME"
 		NODE_KEY="nodesource.gpg.key"
 		NODE_VERSION="18"
@@ -44,30 +45,42 @@ function check_system() {
 		DISTRO_PREFIX="debian-archive/"
 		DISTRO_SECUTIRY_PATH="buster/updates"
 		GCC_VERSION="8"
+		LLVL_VERSION="18"
 		UBUNTU_CODENAME="bionic"
 		VERSION_PACKAGE="lib32gcc1 python2"
 		;;
 	"focal"|\
 	"jammy")
 		GCC_VERSION="9"
+		LLVM_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
 		VERSION_PACKAGE="lib32gcc-s1 python2"
 		;;
 	"bullseye")
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
 		GCC_VERSION="9"
+		LLVM_VERSION="18"
 		UBUNTU_CODENAME="focal"
 		VERSION_PACKAGE="lib32gcc-s1 python2"
 		;;
 	"bookworm")
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
 		GCC_VERSION="12"
+		LLVM_VERSION="18"
 		UBUNTU_CODENAME="jammy"
 		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	"noble")
 		GCC_VERSION="13"
+		LLVM_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
+		VERSION_PACKAGE="lib32gcc-s1"
+		;;
+	"trixie")
+		BPO_FLAG="-t $VERSION_CODENAME-backports"
+		GCC_VERSION="13"
+		LLVM_VERSION="18"
+		UBUNTU_CODENAME="noble"
 		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	*)
@@ -97,6 +110,7 @@ function update_apt_source() {
 	apt install -y apt-transport-https gnupg2
 	if [ -n "$CHN_NET" ]; then
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
+		mv "/etc/apt/sources.list.d/debian.sources" "/etc/apt/sources.list.d/debian.sources.bak"
 		if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
 			cat <<-EOF >"/etc/apt/sources.list"
 				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
@@ -159,11 +173,14 @@ function update_apt_source() {
 	EOF
 	curl -fsL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xe1dd270288b4e6030699e45fa1715d88e1df1f24" -o "/etc/apt/trusted.gpg.d/git-core-ubuntu-ppa.asc"
 
-	cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
-		deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-18 main
-		deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-18 main
-	EOF
-	curl -fsL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
+	# TODO: remove this once llvm-toolchain provides trixie package
+	if [ "$VERSION_CODENAME" != "trixie" ]; then
+		cat <<-EOF >"/etc/apt/sources.list.d/llvm-toolchain.list"
+			deb https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-$LLVM_VERSION main
+			deb-src https://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME-$LLVM_VERSION main
+		EOF
+		curl -fsL "https://apt.llvm.org/llvm-snapshot.gpg.key" -o "/etc/apt/trusted.gpg.d/llvm-toolchain.asc"
+	fi
 
 	cat <<-EOF >"/etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-$UBUNTU_CODENAME.list"
 		deb https://ppa.launchpadcontent.net/longsleep/golang-backports/ubuntu $UBUNTU_CODENAME main
@@ -181,6 +198,16 @@ function update_apt_source() {
 		sed -i "s,ppa.launchpadcontent.net,launchpad.proxy.ustclug.org,g" "/etc/apt/sources.list.d"/*
 	fi
 
+	# TODO: remove this once git-core and golang PPA update signing key
+	case "$VERSION_CODENAME" in
+	"trixie")
+		cat <<-EOF > "/etc/apt/apt.conf.d/99insecure-signatures"
+			Acquire::AllowInsecureRepositories "true";
+			Acquire::AllowDowngradeToInsecureRepositories "true";
+		EOF
+	;;
+	esac
+
 	apt update -y $BPO_FLAG
 
 	set +x
@@ -192,17 +219,17 @@ function install_dependencies() {
 	apt full-upgrade -y $BPO_FLAG
 	apt install -y $BPO_FLAG ack antlr3 asciidoc autoconf automake autopoint binutils bison \
 		build-essential bzip2 ccache cmake cpio curl device-tree-compiler ecj fakeroot \
-		fastjar flex gawk gettext genisoimage git gnutls-dev gperf haveged help2man \
-		intltool irqbalance jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev \
-		libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libreadline-dev libssl-dev \
-		libtool libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch \
-		pkgconf libpython3-dev python3 python3-pip python3-cryptography python3-docutils \
+		fastjar flex gawk gettext genisoimage gnutls-dev gperf haveged help2man intltool \
+		irqbalance jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
+		libmpc-dev libmpfr-dev libncurses-dev libreadline-dev libssl-dev libtool \
+		libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch pkgconf \
+		libpython3-dev python3 python3-pip python3-cryptography python3-docutils \
 		python3-ply python3-pyelftools python3-requests qemu-utils quilt re2c rsync scons \
 		sharutils squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto \
 		zlib1g-dev zstd xxd $VERSION_PACKAGE
 
 	# fix broken http2 support for curl on buster
-	if [ "$VERSION_CODENAME" == "buster"]; then
+	if [ "$VERSION_CODENAME" == "buster" ]; then
 		apt full-upgrade -y
 		apt reinstall -y libcurl3-gnutls/buster
 	fi
@@ -212,6 +239,8 @@ function install_dependencies() {
 		pip3 config set install.trusted-host "https://mirrors.aliyun.com"
 	fi
 
+	apt install -y --allow-unauthenticated $BPO_FLAG git
+
 	apt install -y $BPO_FLAG "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-$GCC_VERSION-multilib" "g++-$GCC_VERSION-multilib"
 	for i in "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-ar-$GCC_VERSION" "gcc-nm-$GCC_VERSION" "gcc-ranlib-$GCC_VERSION"; do
 		ln -svf "$i" "/usr/bin/${i%-$GCC_VERSION}"
@@ -219,23 +248,23 @@ function install_dependencies() {
 	ln -svf "/usr/bin/g++" "/usr/bin/c++"
 	[ -e "/usr/include/asm" ] || ln -svf "/usr/include/$(gcc -dumpmachine)/asm" "/usr/include/asm"
 
-	apt install -y $BPO_FLAG clang-18 libclang-18-dev lld-18 liblld-18-dev
-	for i in "clang-18" "clang++-18" "clang-cpp-18" "ld.lld-18" "ld64.lld-18" "llc-18" "lld-18" "lld-link-18" "opt-18" "wasm-ld-18"; do
-		ln -svf "$i" "/usr/bin/${i%-18}"
+	apt install -y $BPO_FLAG "clang-$LLVM_VERSION" "libclang-$LLVM_VERSION-dev" "lld-$LLVM_VERSION" "liblld-$LLVM_VERSION-dev"
+	for i in "clang-$LLVM_VERSION" "clang++-$LLVM_VERSION" "clang-cpp-$LLVM_VERSION" "ld.lld-$LLVM_VERSION" "ld64.lld-$LLVM_VERSION" "llc-$LLVM_VERSION" "lld-$LLVM_VERSION" "lld-link-$LLVM_VERSION" "opt-$LLVM_VERSION" "wasm-ld-$LLVM_VERSION"; do
+		ln -svf "$i" "/usr/bin/${i%-$LLVM_VERSION}"
 	done
 
-	apt install -y $BPO_FLAG llvm-18
-	for i in "/usr/bin"/llvm-*-18; do
-		ln -svf "$i" "${i%-18}"
+	apt install -y $BPO_FLAG "llvm-$LLVM_VERSION"
+	for i in "/usr/bin"/llvm-*-"$LLVM_VERSION"; do
+		ln -svf "$i" "${i%-$LLVM_VERSION}"
 	done
 
-	apt install -y $BPO_FLAG nodejs yarn
+	apt install -y --allow-unauthenticated $BPO_FLAG nodejs yarn
 	if [ -n "$CHN_NET" ]; then
 		npm config set registry "https://registry.npmmirror.com" --global
 		yarn config set registry "https://registry.npmmirror.com" --global
 	fi
 
-	apt install -y $BPO_FLAG golang-1.25-go
+	apt install -y --allow-unauthenticated $BPO_FLAG golang-1.25-go
 	rm -rf "/usr/bin/go" "/usr/bin/gofmt"
 	ln -svf "/usr/lib/go-1.25/bin/go" "/usr/bin/go"
 	ln -svf "/usr/lib/go-1.25/bin/gofmt" "/usr/bin/gofmt"
