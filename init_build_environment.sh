@@ -45,7 +45,8 @@ function check_system() {
 		DISTRO_PREFIX="debian-archive/"
 		DISTRO_SECUTIRY_PATH="buster/updates"
 		GCC_VERSION="8"
-		LLVL_VERSION="18"
+		LLVM_VERSION="18"
+		NODE_VERSION="20"
 		UBUNTU_CODENAME="bionic"
 		VERSION_PACKAGE="lib32gcc1 python2"
 		;;
