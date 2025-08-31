@@ -114,34 +114,34 @@ function update_apt_source() {
 		mv "/etc/apt/sources.list.d/ubuntu.sources" "/etc/apt/sources.list.d/ubuntu.sources.bak"
 		if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
 			cat <<-EOF >"/etc/apt/sources.list"
-				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
-				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
+				deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
+				deb-src https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
 
-				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
-				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+				deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
+				deb-src https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-security main restricted universe multiverse
 
-				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
-				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+				deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
+				deb-src https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-updates main restricted universe multiverse
 
-				# deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
-				# deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+				# deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
+				# deb-src https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-proposed main restricted universe multiverse
 
-				deb https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
-				deb-src https://repo.huaweicloud.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
+				deb-src https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
 			EOF
 		else
 			cat <<-EOF > "/etc/apt/sources.list"
-				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
-				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
+				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
+				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
 
-				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
-				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
+				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
+				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
 
-				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
-				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
+				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
+				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
 
-				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
-				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
+				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
+				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
 			EOF
 		fi
 	fi
