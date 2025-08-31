@@ -46,7 +46,6 @@ function check_system() {
 		DISTRO_SECUTIRY_PATH="buster/updates"
 		GCC_VERSION="8"
 		LLVM_VERSION="18"
-		NODE_VERSION="20"
 		UBUNTU_CODENAME="bionic"
 		VERSION_PACKAGE="lib32gcc1 python2"
 		;;
@@ -135,8 +134,8 @@ function update_apt_source() {
 				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
 				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
 
-				deb https://repo.huaweicloud.com/debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
-				deb-src https://repo.huaweicloud.com/debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
+				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
+				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
 
 				deb https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
 				deb-src https://repo.huaweicloud.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
