@@ -49,8 +49,7 @@ function check_system() {
 		UBUNTU_CODENAME="bionic"
 		VERSION_PACKAGE="lib32gcc1 python2"
 		;;
-	"focal"|\
-	"jammy")
+	"focal")
 		GCC_VERSION="9"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
@@ -58,9 +57,15 @@ function check_system() {
 		;;
 	"bullseye")
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
-		GCC_VERSION="9"
+		GCC_VERSION="10"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="focal"
+		VERSION_PACKAGE="lib32gcc-s1 python2"
+		;;
+	"jammy")
+		GCC_VERSION="10"
+		LLVM_VERSION="18"
+		UBUNTU_CODENAME="$VERSION_CODENAME"
 		VERSION_PACKAGE="lib32gcc-s1 python2"
 		;;
 	"bookworm")
