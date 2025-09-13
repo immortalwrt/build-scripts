@@ -38,21 +38,21 @@ function check_system() {
 		NODE_KEY="nodesource.gpg.key"
 		NODE_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
-		VERSION_PACKAGE="lib32gcc-s1 libpython3.6-dev python2.7 python3.6"
+		VERSION_PACKAGE="libpython3.6-dev python2.7 python3.6"
 		;;
 	"buster")
 		DISTRO_PREFIX="debian-archive/"
 		DISTRO_SECUTIRY_PATH="buster/updates"
-		GCC_VERSION="8"
+		GCC_VERSION="9"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="bionic"
-		VERSION_PACKAGE="lib32gcc1 python2"
+		VERSION_PACKAGE="python2"
 		;;
 	"focal")
 		GCC_VERSION="9"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
-		VERSION_PACKAGE="lib32gcc-s1 python2"
+		VERSION_PACKAGE="python2"
 		;;
 	"bullseye")
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
@@ -60,13 +60,13 @@ function check_system() {
 		GCC_VERSION="10"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="focal"
-		VERSION_PACKAGE="lib32gcc-s1 python2"
+		VERSION_PACKAGE="python2"
 		;;
 	"jammy")
 		GCC_VERSION="10"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
-		VERSION_PACKAGE="lib32gcc-s1 python2"
+		VERSION_PACKAGE="python2"
 		;;
 	"bookworm")
 		APT_COMP="non-free-firmware"
@@ -74,13 +74,11 @@ function check_system() {
 		GCC_VERSION="12"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="jammy"
-		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	"noble")
 		GCC_VERSION="13"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="$VERSION_CODENAME"
-		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	"trixie")
 		APT_COMP="non-free-firmware"
@@ -88,7 +86,6 @@ function check_system() {
 		GCC_VERSION="13"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="noble"
-		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	*)
 		__error_msg "Unsupported OS, use Ubuntu 20.04 instead."
@@ -182,13 +179,15 @@ function update_apt_source() {
 	EOF
 	curl -fsL "https://dl.yarnpkg.com/debian/pubkey.gpg" -o "/etc/apt/trusted.gpg.d/yarn.asc"
 
-	if [ "$VERSION_CODENAME" == "bionic" ]; then
+	case "$VERSION_CODENAME" in
+	"bionic"|"buster")
 		cat <<-EOF >"/etc/apt/sources.list.d/gcc-toolchain.list"
 			deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
 			deb-src https://ppa.launchpadcontent.net/ubuntu-toolchain-r/test/ubuntu $UBUNTU_CODENAME main
 		EOF
 		curl -fsL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1e9377a2ba9ef27f" -o "/etc/apt/trusted.gpg.d/gcc-toolchain.asc"
-	fi
+		;;
+	esac
 
 	cat <<-EOF >"/etc/apt/sources.list.d/git-core-ubuntu-ppa.list"
 		deb https://ppa.launchpadcontent.net/git-core/ppa/ubuntu $UBUNTU_CODENAME main
@@ -243,10 +242,10 @@ function install_dependencies() {
 	apt install -y $BPO_FLAG ack antlr3 asciidoc autoconf automake autopoint binutils bison \
 		build-essential bzip2 ccache cmake cpio curl device-tree-compiler ecj fakeroot \
 		fastjar flex gawk gettext genisoimage gnutls-dev gperf haveged help2man intltool \
-		irqbalance jq libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
-		libmpc-dev libmpfr-dev libncurses-dev libreadline-dev libssl-dev libtool \
-		libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch pkgconf \
-		libpython3-dev python3 python3-pip python3-cryptography python3-docutils \
+		irqbalance jq lib32gcc-s1 libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev \
+		libltdl-dev libmpc-dev libmpfr-dev libncurses-dev libreadline-dev libssl-dev \
+		libtool libyaml-dev libz-dev lrzsz msmtp nano ninja-build p7zip p7zip-full patch \
+		pkgconf libpython3-dev python3 python3-pip python3-cryptography python3-docutils \
 		python3-ply python3-pyelftools python3-requests qemu-utils quilt re2c rsync scons \
 		sharutils squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto \
 		zlib1g-dev zstd xxd $VERSION_PACKAGE
