@@ -57,6 +57,7 @@ function check_system() {
 		;;
 	"bullseye")
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
+		BPO_DISTRO_PREFIX="debian-archive/"
 		GCC_VERSION="10"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="focal"
@@ -69,6 +70,7 @@ function check_system() {
 		VERSION_PACKAGE="lib32gcc-s1 python2"
 		;;
 	"bookworm")
+		APT_COMP="non-free-firmware"
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
 		GCC_VERSION="12"
 		LLVM_VERSION="18"
@@ -82,6 +84,7 @@ function check_system() {
 		VERSION_PACKAGE="lib32gcc-s1"
 		;;
 	"trixie")
+		APT_COMP="non-free-firmware"
 		BPO_FLAG="-t $VERSION_CODENAME-backports"
 		GCC_VERSION="13"
 		LLVM_VERSION="18"
@@ -136,17 +139,17 @@ function update_apt_source() {
 			EOF
 		else
 			cat <<-EOF > "/etc/apt/sources.list"
-				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
-				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib
+				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib non-free${APT_COMP:+ $APT_COMP}
+				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib non-free${APT_COMP:+ $APT_COMP}
 
-				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
-				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib
+				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib non-free${APT_COMP:+ $APT_COMP}
+				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian-security ${DISTRO_SECUTIRY_PATH:-$VERSION_CODENAME-security} main contrib non-free${APT_COMP:+ $APT_COMP}
 
-				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
-				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib
+				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib non-free${APT_COMP:+ $APT_COMP}
+				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-updates main contrib non-free${APT_COMP:+ $APT_COMP}
 
-				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
-				deb-src https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib
+				deb https://mirrors.cloud.tencent.com/${BPO_DISTRO_PREFIX:-$DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib non-free${APT_COMP:+ $APT_COMP}
+				deb-src https://mirrors.cloud.tencent.com/${BPO_DISTRO_PREFIX:-$DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib non-free${APT_COMP:+ $APT_COMP}
 			EOF
 		fi
 	fi
