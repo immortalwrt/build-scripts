@@ -255,7 +255,7 @@ function install_dependencies() {
 		pip3 config set install.trusted-host "https://mirrors.aliyun.com"
 	fi
 
-	apt install -y --allow-unauthenticated $BPO_FLAG git
+	apt install -y --allow-unauthenticated git
 
 	apt install -y $BPO_FLAG "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-$GCC_VERSION-multilib" "g++-$GCC_VERSION-multilib"
 	for i in "gcc-$GCC_VERSION" "g++-$GCC_VERSION" "gcc-ar-$GCC_VERSION" "gcc-nm-$GCC_VERSION" "gcc-ranlib-$GCC_VERSION"; do
