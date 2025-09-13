@@ -41,7 +41,6 @@ function check_system() {
 		VERSION_PACKAGE="lib32gcc-s1 libpython3.6-dev python2.7 python3.6"
 		;;
 	"buster")
-		BPO_FLAG="-t $VERSION_CODENAME-backports"
 		DISTRO_PREFIX="debian-archive/"
 		DISTRO_SECUTIRY_PATH="buster/updates"
 		GCC_VERSION="8"
@@ -116,10 +115,16 @@ function update_apt_source() {
 
 	apt update -y
 	apt install -y apt-transport-https gnupg2
+
+	mkdir -p "/etc/apt/keyrings"
+	mkdir -p "/etc/apt/sources.list.d"
+	mkdir -p "/etc/apt/trusted.gpg.d"
+
 	if [ -n "$CHN_NET" ]; then
 		mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 		mv "/etc/apt/sources.list.d/debian.sources" "/etc/apt/sources.list.d/debian.sources.bak"
 		mv "/etc/apt/sources.list.d/ubuntu.sources" "/etc/apt/sources.list.d/ubuntu.sources.bak"
+
 		if [ "$VERSION_CODENAME" == "$UBUNTU_CODENAME" ]; then
 			cat <<-EOF >"/etc/apt/sources.list"
 				deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME main restricted universe multiverse
@@ -137,6 +142,11 @@ function update_apt_source() {
 				deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
 				deb-src https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
 			EOF
+		elif [ "$VERSION_CODENAME" == "buster" ]; then
+			cat <<-EOF > "/etc/apt/sources.list"
+			deb https://mirrors.tuna.tsinghua.edu.cn/debian-elts $VERSION_CODENAME main contrib non-free
+			EOF
+			curl -fsL "https://deb.freexian.com/extended-lts/archive-key.gpg" -o "/etc/apt/trusted.gpg.d/extended-lts.gpg"
 		else
 			cat <<-EOF > "/etc/apt/sources.list"
 				deb https://mirrors.cloud.tencent.com/${DISTRO_PREFIX}debian/ $VERSION_CODENAME main contrib non-free${APT_COMP:+ $APT_COMP}
@@ -152,11 +162,15 @@ function update_apt_source() {
 				deb-src https://mirrors.cloud.tencent.com/${BPO_DISTRO_PREFIX:-$DISTRO_PREFIX}debian/ $VERSION_CODENAME-backports main contrib non-free${APT_COMP:+ $APT_COMP}
 			EOF
 		fi
+	else
+		if [ "$VERSION_CODENAME" == "buster" ]; then
+			mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
+			cat <<-EOF > "/etc/apt/sources.list"
+			deb https://deb.freexian.com/extended-lts $VERSION_CODENAME main contrib non-free
+			EOF
+			curl -fsL "https://deb.freexian.com/extended-lts/archive-key.gpg" -o "/etc/apt/trusted.gpg.d/extended-lts.gpg"
+		fi
 	fi
-
-	mkdir -p "/etc/apt/keyrings"
-	mkdir -p "/etc/apt/sources.list.d"
-	mkdir -p "/etc/apt/trusted.gpg.d"
 
 	cat <<-EOF >"/etc/apt/sources.list.d/nodesource.list"
 		deb https://deb.nodesource.com/node_${NODE_VERSION:-22}.x ${NODE_DISTRO:-nodistro} main
@@ -236,12 +250,6 @@ function install_dependencies() {
 		python3-ply python3-pyelftools python3-requests qemu-utils quilt re2c rsync scons \
 		sharutils squashfs-tools subversion swig texinfo uglifyjs unzip vim wget xmlto \
 		zlib1g-dev zstd xxd $VERSION_PACKAGE
-
-	# fix broken http2 support for curl on buster
-	if [ "$VERSION_CODENAME" == "buster" ]; then
-		apt full-upgrade -y
-		apt reinstall -y libcurl3-gnutls/buster
-	fi
 
 	if [ -n "$CHN_NET" ]; then
 		pip3 config set global.index-url "https://mirrors.aliyun.com/pypi/simple/"
