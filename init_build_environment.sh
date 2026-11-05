@@ -101,7 +101,10 @@ function check_system() {
 function check_network() {
 	__info_msg "Checking network..."
 
-	curl -s "myip.ipip.net" | grep -qo "中国" && CHN_NET=1
+	case $(curl -s https://myip.ipip.net 2>/dev/null) in
+		*香港*|*澳门*|*台湾*) : ;;
+		*中国*) CHN_NET=1 ;;
+	esac
 	curl --connect-timeout 10 "baidu.com" > "/dev/null" 2>&1 || { __warning_msg "Your network is not suitable for compiling OpenWrt!"; }
 	curl --connect-timeout 10 "google.com" > "/dev/null" 2>&1 || { __warning_msg "Your network is not suitable for compiling OpenWrt!"; }
 }
