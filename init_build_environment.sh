@@ -41,8 +41,6 @@ function check_system() {
 		VERSION_PACKAGE="libpython3.6-dev python2.7 python3.6"
 		;;
 	"buster")
-		DISTRO_PREFIX="debian-archive/"
-		DISTRO_SECUTIRY_PATH="buster/updates"
 		GCC_VERSION="9"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="bionic"
@@ -55,8 +53,6 @@ function check_system() {
 		VERSION_PACKAGE="python2"
 		;;
 	"bullseye")
-		BPO_FLAG="-t $VERSION_CODENAME-backports"
-		BPO_DISTRO_PREFIX="debian-archive/"
 		GCC_VERSION="10"
 		LLVM_VERSION="18"
 		UBUNTU_CODENAME="focal"
@@ -139,7 +135,7 @@ function update_apt_source() {
 				deb https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
 				deb-src https://mirrors.cloud.tencent.com/ubuntu/ $VERSION_CODENAME-backports main restricted universe multiverse
 			EOF
-		elif [ "$VERSION_CODENAME" == "buster" ]; then
+		elif [ "$VERSION_CODENAME" == "buster" ] || [ "$VERSION_CODENAME" == "bullseye" ]; then
 			cat <<-EOF > "/etc/apt/sources.list"
 			deb https://mirrors.tuna.tsinghua.edu.cn/debian-elts $VERSION_CODENAME main contrib non-free
 			EOF
@@ -160,7 +156,7 @@ function update_apt_source() {
 			EOF
 		fi
 	else
-		if [ "$VERSION_CODENAME" == "buster" ]; then
+		if [ "$VERSION_CODENAME" == "buster" ] || [ "$VERSION_CODENAME" == "bullseye" ]; then
 			mv "/etc/apt/sources.list" "/etc/apt/sources.list.bak"
 			cat <<-EOF > "/etc/apt/sources.list"
 			deb https://deb.freexian.com/extended-lts $VERSION_CODENAME main contrib non-free
